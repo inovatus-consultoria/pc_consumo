@@ -486,10 +486,6 @@ var PANEL_HTML_HEAD = `<!DOCTYPE html>
     .table-help strong { color: var(--ink); }
     .table-help-controls { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
     #freezeResultBtn.active { background: var(--surface2); border-color: var(--accent); color: var(--accent); }
-    .density-toggle { display: flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
-    .density-btn { border: 0; background: var(--surface); color: var(--ink2); padding: 7px 11px; font-size: 10.5px; font-weight: 600; cursor: pointer; }
-    .density-btn + .density-btn { border-left: 1px solid var(--border); }
-    .density-btn.active { background: var(--accent); color: white; }
     .col-menu-wrap { position: relative; }
     .col-menu { display: none; position: absolute; top: 100%; right: 0; margin-top: 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; box-shadow: var(--shadow); padding: 8px; z-index: 60; max-height: 280px; overflow: auto; width: 240px; }
     .col-menu.open { display: block; }
@@ -500,16 +496,12 @@ var PANEL_HTML_HEAD = `<!DOCTYPE html>
     .col-resizable { position: relative; padding-right: 13px !important; }
     .col-resize-handle { position: absolute; top: 0; right: -3px; width: 7px; height: 100%; cursor: col-resize; z-index: 5; }
     .col-resize-handle:hover, .col-resize-handle.resizing { background: rgba(45,92,78,.28); }
-    .table-shell.density-compact tbody td { padding: 5px 7px; }
-    .table-shell.density-compact thead th { padding: 6px 7px; }
-    .table-shell.density-compact .cell-text { -webkit-line-clamp: 2; }
-    .table-shell.density-compact .cell-short { -webkit-line-clamp: 1; }
 
     .table-shell { position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: scroll; max-height: calc(100vh - 270px); box-shadow: 0 2px 12px rgba(26,36,32,.035); scrollbar-width: auto; }
     table { width: max-content; min-width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; }
-    thead th { position: sticky; top: 0; z-index: 10; background: #EDF2F0; color: var(--ink2); border-bottom: 1px solid var(--border); border-right: 1px solid #DDE6E2; padding: 10px 9px; font-size: 10px; font-weight: 700; letter-spacing: .055em; text-transform: uppercase; text-align: left; vertical-align: bottom; line-height: 1.3; }
+    thead th { position: sticky; top: 0; z-index: 10; background: #EDF2F0; color: var(--ink2); border-bottom: 1px solid var(--border); border-right: 1px solid #DDE6E2; padding: 6px 7px; font-size: 10px; font-weight: 700; letter-spacing: .055em; text-transform: uppercase; text-align: left; vertical-align: bottom; line-height: 1.3; }
     thead th:last-child { border-right: 0; }
-    tbody td { position: relative; border-bottom: 1px solid #E5EBE8; border-right: 1px solid #E5EBE8; padding: 9px; vertical-align: top; background: white; font-size: 11.8px; line-height: 1.42; transition: box-shadow .12s, background .12s; }
+    tbody td { position: relative; border-bottom: 1px solid #E5EBE8; border-right: 1px solid #E5EBE8; padding: 5px 7px; vertical-align: top; background: white; font-size: 11.8px; line-height: 1.42; transition: box-shadow .12s, background .12s; }
     tbody tr:last-child td { border-bottom: 0; }
     tbody td:last-child { border-right: 0; }
     tbody tr:hover td { box-shadow: inset 0 1px 0 #D4E1DC, inset 0 -1px 0 #D4E1DC; }
@@ -521,13 +513,8 @@ var PANEL_HTML_HEAD = `<!DOCTYPE html>
     .table-shell.no-freeze-result .sticky-status,
     .table-shell.no-freeze-result .sticky-observation,
     .table-shell.no-freeze-result .sticky-supplement { position: static; right: auto; border-left: 0; }
-    .col-w-narrow { width: 110px; min-width: 110px; }
-    .col-w-medium { width: 190px; min-width: 190px; }
-    .col-w-wide { width: 300px; min-width: 300px; }
-    .col-w-value { width: 125px; min-width: 125px; text-align: right; }
-    .col-w-tiny { width: 78px; min-width: 78px; text-align: right; }
-    .col-w-status { width: 135px; min-width: 135px; }
-    .col-w-observation { width: 340px; min-width: 340px; }
+    .col-w-value { text-align: right; }
+    .col-w-tiny { text-align: right; }
     .sticky-status { position: sticky; right: 530px; z-index: 8; background: #F9FBFA !important; border-left: 2px solid var(--border); transform: translateZ(0); }
     .sticky-observation { position: sticky; right: 190px; z-index: 8; background: #F9FBFA !important; transform: translateZ(0); }
     .sticky-supplement { position: sticky; right: 0; z-index: 8; background: #F9FBFA !important; transform: translateZ(0); }
@@ -535,8 +522,8 @@ var PANEL_HTML_HEAD = `<!DOCTYPE html>
 
     .cell-clickable { cursor: pointer; }
     .cell-clickable:hover { box-shadow: inset 0 0 0 2px rgba(45,92,78,.28); }
-    .cell-text { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; white-space: pre-line; }
-    .cell-short { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .cell-text { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; white-space: pre-line; }
+    .cell-short { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
     .empty-cell { color: var(--ink3); font-style: italic; }
 
     .state-attention { background: linear-gradient(90deg, var(--gold) 0 3px, #FFFBF2 3px 100%) !important; }
@@ -661,10 +648,6 @@ var PANEL_HTML_HEAD = `<!DOCTYPE html>
         <div class="table-help">
           <div><strong>Clique em qualquer célula</strong> para ver o valor no REF, na NF e no comprovante, com a fonte usada em cada um.</div>
           <div class="table-help-controls">
-            <div class="density-toggle" id="densityToggle">
-              <button class="density-btn" data-density="comfortable">Confortável</button>
-              <button class="density-btn" data-density="compact">Compacta</button>
-            </div>
             <button class="btn" id="freezeResultBtn">Fixar colunas de resultado</button>
             <div class="col-menu-wrap">
               <button class="btn" id="colMenuBtn">Colunas ▾</button>
@@ -772,12 +755,11 @@ var PANEL_RUNTIME_JS = [
 '  if (st === "notverifiable" || st === "not_verificavel") return "state-notverifiable";',
 '  return "";',
 '}',
-'function widthClass(group) {',
-'  if (group === "description" || group === "justification") return "col-w-wide";',
-'  if (group === "date" || group === "classification") return "col-w-narrow";',
-'  if (group === "value") return "col-w-value";',
-'  if (group === "quantity") return "col-w-tiny";',
-'  return "col-w-medium";',
+'function widthClass(col) {',
+'  if (!col) return "";',
+'  var tier = tierForColumn(col);',
+'  if (tier === "value" || tier === "tiny") return "col-w-" + tier;',
+'  return "";',
 '}',
 '',
 'var RESULT_ORDER = ["Conforme", "Atenção", "Inconsistência", "Não verificável"];',
@@ -866,24 +848,23 @@ var PANEL_RUNTIME_JS = [
 'DATA.columns = buildColumns(DATA.items);',
 '',
 'var FIXED_COLS = [',
-'  { key: "__status", label: "Status geral", comfortable: 135, compact: 122 },',
-'  { key: "__observation", label: "Observa\u00e7\u00f5es de an\u00e1lise", comfortable: 340, compact: 262 },',
-'  { key: "__supplement", label: "Compara\u00e7\u00f5es suplementares", comfortable: 190, compact: 168 }',
+'  { key: "__status", label: "Status geral", width: 122 },',
+'  { key: "__observation", label: "Observa\u00e7\u00f5es de an\u00e1lise", width: 262 },',
+'  { key: "__supplement", label: "Compara\u00e7\u00f5es suplementares", width: 168 }',
 '];',
 '',
 'var prefsKey = "inovatusRefPrefs:" + String((RAW_DATA.project && (RAW_DATA.project.projectId || RAW_DATA.project.analysisName || RAW_DATA.project.expenseCategory)) || "default");',
 'function loadPrefs() {',
 '  try {',
 '    var raw = window.localStorage.getItem(prefsKey);',
-'    if (!raw) return { hidden: {}, widths: {}, density: "compact", freezeResult: true };',
+'    if (!raw) return { hidden: {}, widths: {}, freezeResult: true };',
 '    var parsed = JSON.parse(raw);',
 '    return {',
 '      hidden: parsed.hidden || {},',
 '      widths: parsed.widths || {},',
-'      density: parsed.density || "compact",',
 '      freezeResult: parsed.freezeResult !== false',
 '    };',
-'  } catch (e) { return { hidden: {}, widths: {}, density: "compact", freezeResult: true }; }',
+'  } catch (e) { return { hidden: {}, widths: {}, freezeResult: true }; }',
 '}',
 'function savePrefs() {',
 '  try { window.localStorage.setItem(prefsKey, JSON.stringify(prefs)); } catch (e) {}',
@@ -909,10 +890,7 @@ var PANEL_RUNTIME_JS = [
 '  quantity: "tiny",',
 '  date: "narrow"',
 '};',
-'var TIER_WIDTHS = {',
-'  comfortable: { tiny: 78, narrow: 118, medium: 190, wide: 300, value: 125 },',
-'  compact: { tiny: 62, narrow: 96, medium: 152, wide: 232, value: 102 }',
-'};',
+'var TIER_WIDTHS = { tiny: 62, narrow: 96, medium: 152, wide: 232, value: 102 };',
 'function tierForColumn(col) {',
 '  return KNOWN_FIELD_TIER[col.key] || GROUP_TIER[col.group] || "medium";',
 '}',
@@ -921,11 +899,10 @@ var PANEL_RUNTIME_JS = [
 '  return DATA.columns.filter(function (c) { return !prefs.hidden[c.key]; });',
 '}',
 'function getColumnWidth(col) {',
-'  var widths = TIER_WIDTHS[prefs.density] || TIER_WIDTHS.comfortable;',
-'  return (prefs.widths && prefs.widths[col.key]) || widths[tierForColumn(col)] || widths.medium;',
+'  return (prefs.widths && prefs.widths[col.key]) || TIER_WIDTHS[tierForColumn(col)] || TIER_WIDTHS.medium;',
 '}',
 'function getFixedWidth(fc) {',
-'  return (prefs.widths && prefs.widths[fc.key]) || fc[prefs.density] || fc.comfortable;',
+'  return (prefs.widths && prefs.widths[fc.key]) || fc.width;',
 '}',
 '',
 'DATA.generalSignals = [];',
@@ -1141,11 +1118,11 @@ var PANEL_RUNTIME_JS = [
 'function renderRefHead() {',
 '  var cells = ["<th class=\\"sticky-item\\">Item</th>"];',
 '  visibleColumns().forEach(function (c) {',
-'    cells.push("<th class=\\"" + widthClass(c.group) + " col-resizable\\" data-col-key=\\"" + esc(c.key) + "\\"><span class=\\"th-label\\">" + esc(c.label) + "</span><span class=\\"col-resize-handle\\" data-col-key=\\"" + esc(c.key) + "\\"></span></th>");',
+'    cells.push("<th class=\\"" + widthClass(c) + " col-resizable\\" data-col-key=\\"" + esc(c.key) + "\\"><span class=\\"th-label\\">" + esc(c.label) + "</span><span class=\\"col-resize-handle\\" data-col-key=\\"" + esc(c.key) + "\\"></span></th>");',
 '  });',
 '  cells.push("<th class=\\"col-w-status sticky-status col-resizable\\" data-col-key=\\"__status\\"><span class=\\"th-label\\">" + esc("Status geral") + "</span><span class=\\"col-resize-handle\\" data-col-key=\\"__status\\"></span></th>");',
 '  cells.push("<th class=\\"col-w-observation sticky-observation col-resizable\\" data-col-key=\\"__observation\\"><span class=\\"th-label\\">" + esc("Observa\u00e7\u00f5es de an\u00e1lise") + "</span><span class=\\"col-resize-handle\\" data-col-key=\\"__observation\\"></span></th>");',
-'  cells.push("<th class=\\"" + widthClass("") + " sticky-supplement col-resizable\\" data-col-key=\\"__supplement\\"><span class=\\"th-label\\">" + esc("Compara\u00e7\u00f5es suplementares") + "</span><span class=\\"col-resize-handle\\" data-col-key=\\"__supplement\\"></span></th>");',
+'  cells.push("<th class=\\"" + widthClass(null) + " sticky-supplement col-resizable\\" data-col-key=\\"__supplement\\"><span class=\\"th-label\\">" + esc("Compara\u00e7\u00f5es suplementares") + "</span><span class=\\"col-resize-handle\\" data-col-key=\\"__supplement\\"></span></th>");',
 '  document.getElementById("refHeadRow").innerHTML = cells.join("");',
 '  renderColGroup();',
 '  applyStickyOffsets();',
@@ -1233,16 +1210,6 @@ var PANEL_RUNTIME_JS = [
 '  });',
 '}',
 '',
-'function setDensity(d, skipSave) {',
-'  prefs.density = d;',
-'  var shell = document.getElementById("tableShell");',
-'  if (shell) shell.classList.toggle("density-compact", d === "compact");',
-'  Array.prototype.forEach.call(document.querySelectorAll(".density-btn"), function (b) { b.classList.toggle("active", b.dataset.density === d); });',
-'  if (!skipSave) savePrefs();',
-'  renderColGroup();',
-'  applyStickyOffsets();',
-'}',
-'',
 'function setFreezeResult(on, skipSave) {',
 '  prefs.freezeResult = on;',
 '  var shell = document.getElementById("tableShell");',
@@ -1267,7 +1234,7 @@ var PANEL_RUNTIME_JS = [
 '  var text = field ? fmtByGroup(field, field.refValue) : "";',
 '  var isEmptyText = isEmpty(text) || text === dash();',
 '  var titleAttr = isEmptyText ? "" : " title=\\"" + esc(text) + "\\"";',
-'  return "<td class=\\"cell-clickable " + widthClass(col.group) + " " + cls + "\\" data-item=\\"" + esc(item.itemRef) + "\\" data-field=\\"" + esc(col.key) + "\\"" + titleAttr + ">" +',
+'  return "<td class=\\"cell-clickable " + widthClass(col) + " " + cls + "\\" data-item=\\"" + esc(item.itemRef) + "\\" data-field=\\"" + esc(col.key) + "\\"" + titleAttr + ">" +',
 '    "<div class=\\"" + (isEmptyText ? "cell-short empty-cell" : "cell-text") + "\\">" + esc(isEmptyText ? dash() : text) + "</div></td>";',
 '}',
 '',
@@ -1282,7 +1249,7 @@ var PANEL_RUNTIME_JS = [
 '    cells += "<td class=\\"cell-clickable col-w-status sticky-status " + stateClass(it.result === "Inconsist\u00eancia" ? "inconsistency" : (it.result === "Aten\u00e7\u00e3o" ? "attention" : (it.result === "N\u00e3o verific\u00e1vel" ? "notverifiable" : ""))) + "\\" data-item=\\"" + esc(it.itemRef) + "\\" data-field=\\"status\\">" +',
 '      badgeHtml(it.result) + "<div style=\\"margin-top:6px;color:var(--ink3);font-size:10.5px\\">" + esc(dash(it.priority)) + "</div></td>";',
 '    cells += "<td class=\\"cell-clickable col-w-observation sticky-observation\\" data-item=\\"" + esc(it.itemRef) + "\\" data-field=\\"observation\\"" + (isEmpty(it.observation) ? "" : " title=\\"" + esc(it.observation) + "\\"") + "><div class=\\"cell-text\\">" + esc(dash(it.observation)) + "</div></td>";',
-'    cells += "<td class=\\"cell-clickable " + widthClass("") + " sticky-supplement\\" data-item=\\"" + esc(it.itemRef) + "\\" data-field=\\"supplement\\"" + (isEmpty(supplementaryText(it)) ? "" : " title=\\"" + esc(supplementaryText(it)) + "\\"") + "><div class=\\"cell-text\\">" + esc(supplementaryText(it)) + "</div></td>";',
+'    cells += "<td class=\\"cell-clickable " + widthClass(null) + " sticky-supplement\\" data-item=\\"" + esc(it.itemRef) + "\\" data-field=\\"supplement\\"" + (isEmpty(supplementaryText(it)) ? "" : " title=\\"" + esc(supplementaryText(it)) + "\\"") + "><div class=\\"cell-text\\">" + esc(supplementaryText(it)) + "</div></td>";',
 '    return "<tr id=\\"ref-row-" + esc(it.itemRef) + "\\">" + cells + "</tr>";',
 '  }).join("") : "<tr><td colspan=\\"" + (cols.length + 4) + "\\"><div class=\\"empty\\">" + esc("Nenhum item encontrado com os filtros selecionados.") + "</div></td></tr>";',
 '',
@@ -1465,9 +1432,6 @@ var PANEL_RUNTIME_JS = [
 '});',
 'var colMenuEl = document.getElementById("colMenu");',
 'if (colMenuEl) colMenuEl.addEventListener("click", function (e) { e.stopPropagation(); });',
-'Array.prototype.forEach.call(document.querySelectorAll(".density-btn"), function (b) {',
-'  b.addEventListener("click", function () { setDensity(b.dataset.density); });',
-'});',
 'var freezeResultBtnEl = document.getElementById("freezeResultBtn");',
 'if (freezeResultBtnEl) freezeResultBtnEl.addEventListener("click", function () { setFreezeResult(!prefs.freezeResult); });',
 '',
@@ -1475,7 +1439,6 @@ var PANEL_RUNTIME_JS = [
 'renderLegend();',
 'renderSignals();',
 'renderColMenu();',
-'setDensity(prefs.density, true);',
 'setFreezeResult(prefs.freezeResult, true);',
 'renderRefHead();',
 'createFilters("overviewFilters", "exceptions");',
