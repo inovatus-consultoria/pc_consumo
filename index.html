@@ -485,6 +485,7 @@ var PANEL_HTML_HEAD = `<!DOCTYPE html>
     .table-help { display: flex; justify-content: space-between; align-items: center; gap: 15px; padding: 9px 12px; margin-bottom: 8px; border: 1px solid var(--border); border-radius: 9px; background: var(--surface); color: var(--ink2); font-size: 11.5px; }
     .table-help strong { color: var(--ink); }
     .table-help-controls { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    #freezeResultBtn.active { background: var(--surface2); border-color: var(--accent); color: var(--accent); }
     .density-toggle { display: flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
     .density-btn { border: 0; background: var(--surface); color: var(--ink2); padding: 7px 11px; font-size: 10.5px; font-weight: 600; cursor: pointer; }
     .density-btn + .density-btn { border-left: 1px solid var(--border); }
@@ -514,8 +515,12 @@ var PANEL_HTML_HEAD = `<!DOCTYPE html>
     tbody tr:hover td { box-shadow: inset 0 1px 0 #D4E1DC, inset 0 -1px 0 #D4E1DC; }
     tbody tr.row-selected td { box-shadow: inset 0 2px 0 var(--accent2), inset 0 -2px 0 var(--accent2); }
 
-    .sticky-item { position: sticky; left: 0; z-index: 8; background: #F9FBFA !important; width: 68px; min-width: 68px; max-width: 68px; text-align: center; font-weight: 700; color: var(--accent); }
+    .sticky-item { position: sticky; left: 0; z-index: 8; background: #F9FBFA !important; width: 68px; min-width: 68px; max-width: 68px; text-align: center; font-weight: 700; color: var(--accent); transform: translateZ(0); }
     thead .sticky-item { z-index: 14; background: #E4ECE9 !important; }
+    thead th { transform: translateZ(0); }
+    .table-shell.no-freeze-result .sticky-status,
+    .table-shell.no-freeze-result .sticky-observation,
+    .table-shell.no-freeze-result .sticky-supplement { position: static; right: auto; border-left: 0; }
     .col-w-narrow { width: 110px; min-width: 110px; }
     .col-w-medium { width: 190px; min-width: 190px; }
     .col-w-wide { width: 300px; min-width: 300px; }
@@ -523,9 +528,9 @@ var PANEL_HTML_HEAD = `<!DOCTYPE html>
     .col-w-tiny { width: 78px; min-width: 78px; text-align: right; }
     .col-w-status { width: 135px; min-width: 135px; }
     .col-w-observation { width: 340px; min-width: 340px; }
-    .sticky-status { position: sticky; right: 530px; z-index: 8; background: #F9FBFA !important; border-left: 2px solid var(--border); }
-    .sticky-observation { position: sticky; right: 190px; z-index: 8; background: #F9FBFA !important; }
-    .sticky-supplement { position: sticky; right: 0; z-index: 8; background: #F9FBFA !important; }
+    .sticky-status { position: sticky; right: 530px; z-index: 8; background: #F9FBFA !important; border-left: 2px solid var(--border); transform: translateZ(0); }
+    .sticky-observation { position: sticky; right: 190px; z-index: 8; background: #F9FBFA !important; transform: translateZ(0); }
+    .sticky-supplement { position: sticky; right: 0; z-index: 8; background: #F9FBFA !important; transform: translateZ(0); }
     thead .sticky-status, thead .sticky-observation, thead .sticky-supplement { z-index: 14; background: #E4ECE9 !important; }
 
     .cell-clickable { cursor: pointer; }
@@ -660,6 +665,7 @@ var PANEL_HTML_HEAD = `<!DOCTYPE html>
               <button class="density-btn" data-density="comfortable">Confortável</button>
               <button class="density-btn" data-density="compact">Compacta</button>
             </div>
+            <button class="btn" id="freezeResultBtn">Fixar colunas de resultado</button>
             <div class="col-menu-wrap">
               <button class="btn" id="colMenuBtn">Colunas ▾</button>
               <div class="col-menu" id="colMenu"></div>
@@ -860,63 +866,69 @@ var PANEL_RUNTIME_JS = [
 'DATA.columns = buildColumns(DATA.items);',
 '',
 'var FIXED_COLS = [',
-'  { key: "__status", label: "Status geral", minWidth: 100, defaultWidth: 135 },',
-'  { key: "__observation", label: "Observações de análise", minWidth: 160, defaultWidth: 340 },',
-'  { key: "__supplement", label: "Comparações suplementares", minWidth: 140, defaultWidth: 190 }',
+'  { key: "__status", label: "Status geral", comfortable: 135, compact: 122 },',
+'  { key: "__observation", label: "Observa\u00e7\u00f5es de an\u00e1lise", comfortable: 340, compact: 262 },',
+'  { key: "__supplement", label: "Compara\u00e7\u00f5es suplementares", comfortable: 190, compact: 168 }',
 '];',
 '',
 'var prefsKey = "inovatusRefPrefs:" + String((RAW_DATA.project && (RAW_DATA.project.projectId || RAW_DATA.project.analysisName || RAW_DATA.project.expenseCategory)) || "default");',
 'function loadPrefs() {',
 '  try {',
 '    var raw = window.localStorage.getItem(prefsKey);',
-'    if (!raw) return { hidden: {}, widths: {}, density: "comfortable" };',
+'    if (!raw) return { hidden: {}, widths: {}, density: "compact", freezeResult: true };',
 '    var parsed = JSON.parse(raw);',
-'    return { hidden: parsed.hidden || {}, widths: parsed.widths || {}, density: parsed.density || "comfortable" };',
-'  } catch (e) { return { hidden: {}, widths: {}, density: "comfortable" }; }',
+'    return {',
+'      hidden: parsed.hidden || {},',
+'      widths: parsed.widths || {},',
+'      density: parsed.density || "compact",',
+'      freezeResult: parsed.freezeResult !== false',
+'    };',
+'  } catch (e) { return { hidden: {}, widths: {}, density: "compact", freezeResult: true }; }',
 '}',
 'function savePrefs() {',
 '  try { window.localStorage.setItem(prefsKey, JSON.stringify(prefs)); } catch (e) {}',
 '}',
 'var prefs = loadPrefs();',
 '',
-'function measureTextWidth(text, font, fallbackCharPx) {',
-'  var str = String(text || "");',
-'  try {',
-'    measureTextWidth.canvas = measureTextWidth.canvas || document.createElement("canvas");',
-'    var ctx = measureTextWidth.canvas.getContext && measureTextWidth.canvas.getContext("2d");',
-'    if (ctx) { ctx.font = font; return ctx.measureText(str).width; }',
-'  } catch (e) {}',
-'  return str.length * fallbackCharPx;',
+'',
+'var KNOWN_FIELD_TIER = {',
+'  quantity: "tiny",',
+'  unit: "tiny",',
+'  totalValue: "value",',
+'  unitValue: "value",',
+'  origin: "narrow",',
+'  documentDate: "narrow",',
+'  paymentDate: "narrow",',
+'  description: "wide",',
+'  justification: "wide"',
+'};',
+'var GROUP_TIER = {',
+'  description: "wide",',
+'  justification: "wide",',
+'  value: "value",',
+'  quantity: "tiny",',
+'  date: "narrow"',
+'};',
+'var TIER_WIDTHS = {',
+'  comfortable: { tiny: 78, narrow: 118, medium: 190, wide: 300, value: 125 },',
+'  compact: { tiny: 62, narrow: 96, medium: 152, wide: 232, value: 102 }',
+'};',
+'function tierForColumn(col) {',
+'  return KNOWN_FIELD_TIER[col.key] || GROUP_TIER[col.group] || "medium";',
 '}',
-'function autoWidthForColumn(col) {',
-'  var maxW = measureTextWidth(col.label, "700 9px \'DM Sans\', Arial, sans-serif", 6.2) + 30;',
-'  DATA.items.forEach(function (it) {',
-'    var f = (it.fields || {})[col.key];',
-'    var text = f ? fmtByGroup(f, f.refValue) : "";',
-'    var w = measureTextWidth(text, "11.8px \'DM Sans\', Arial, sans-serif", 6.4) + 22;',
-'    if (w > maxW) maxW = w;',
-'  });',
-'  var minW = (col.group === "quantity") ? 60 : 90;',
-'  var maxAllowed = (col.group === "description" || col.group === "justification") ? 340 : 260;',
-'  return Math.max(minW, Math.min(maxAllowed, Math.round(maxW)));',
-'}',
-'DATA.autoWidths = {};',
-'DATA.columns.forEach(function (c) { DATA.autoWidths[c.key] = autoWidthForColumn(c); });',
 '',
 'function visibleColumns() {',
 '  return DATA.columns.filter(function (c) { return !prefs.hidden[c.key]; });',
 '}',
 'function getColumnWidth(col) {',
-'  var base = (prefs.widths && prefs.widths[col.key]) || DATA.autoWidths[col.key] || 150;',
-'  if (prefs.density === "compact") base = Math.max(56, Math.round(base * 0.82));',
-'  return base;',
+'  var widths = TIER_WIDTHS[prefs.density] || TIER_WIDTHS.comfortable;',
+'  return (prefs.widths && prefs.widths[col.key]) || widths[tierForColumn(col)] || widths.medium;',
 '}',
 'function getFixedWidth(fc) {',
-'  var base = (prefs.widths && prefs.widths[fc.key]) || fc.defaultWidth;',
-'  if (prefs.density === "compact") base = Math.max(fc.minWidth, Math.round(base * 0.82));',
-'  return base;',
+'  return (prefs.widths && prefs.widths[fc.key]) || fc[prefs.density] || fc.comfortable;',
 '}',
 '',
+'DATA.generalSignals = [];',
 'DATA.generalSignals = [];',
 '(RAW_DATA.generalSignals || []).forEach(function (s) {',
 '  DATA.generalSignals.push({ title: s.label || "Sinalização geral", text: s.description || "" });',
@@ -1231,6 +1243,16 @@ var PANEL_RUNTIME_JS = [
 '  applyStickyOffsets();',
 '}',
 '',
+'function setFreezeResult(on, skipSave) {',
+'  prefs.freezeResult = on;',
+'  var shell = document.getElementById("tableShell");',
+'  if (shell) shell.classList.toggle("no-freeze-result", !on);',
+'  var btn = document.getElementById("freezeResultBtn");',
+'  if (btn) btn.classList.toggle("active", on);',
+'  if (!skipSave) savePrefs();',
+'  applyStickyOffsets();',
+'}',
+'',
 'function supplementaryText(item) {',
 '  var parts = (item.supplementaryComparisons || []).map(function (s) { return typeof s === "string" ? s : (s.label || s.description || ""); }).filter(Boolean);',
 '  var dims = item.dimensions || {};',
@@ -1242,11 +1264,13 @@ var PANEL_RUNTIME_JS = [
 'function makeFieldCell(item, col) {',
 '  var field = (item.fields || {})[col.key];',
 '  var cls = field ? stateClass(field.state) : "";',
-'  var text = field ? fmtByGroup(field, field.refValue) : "—";',
-'  var isEmptyText = !text || text === "—";',
-'  return "<td class=\\"cell-clickable " + widthClass(col.group) + " " + cls + "\\" data-item=\\"" + esc(item.itemRef) + "\\" data-field=\\"" + esc(col.key) + "\\">" +',
-'    "<div class=\\"" + (isEmptyText ? "cell-short empty-cell" : "cell-text") + "\\">" + esc(isEmptyText ? "—" : text) + "</div></td>";',
+'  var text = field ? fmtByGroup(field, field.refValue) : "";',
+'  var isEmptyText = isEmpty(text) || text === dash();',
+'  var titleAttr = isEmptyText ? "" : " title=\\"" + esc(text) + "\\"";',
+'  return "<td class=\\"cell-clickable " + widthClass(col.group) + " " + cls + "\\" data-item=\\"" + esc(item.itemRef) + "\\" data-field=\\"" + esc(col.key) + "\\"" + titleAttr + ">" +',
+'    "<div class=\\"" + (isEmptyText ? "cell-short empty-cell" : "cell-text") + "\\">" + esc(isEmptyText ? dash() : text) + "</div></td>";',
 '}',
+'',
 '',
 'function renderRef() {',
 '  var list = filteredItems();',
@@ -1257,8 +1281,8 @@ var PANEL_RUNTIME_JS = [
 '    cols.forEach(function (col) { cells += makeFieldCell(it, col); });',
 '    cells += "<td class=\\"cell-clickable col-w-status sticky-status " + stateClass(it.result === "Inconsist\u00eancia" ? "inconsistency" : (it.result === "Aten\u00e7\u00e3o" ? "attention" : (it.result === "N\u00e3o verific\u00e1vel" ? "notverifiable" : ""))) + "\\" data-item=\\"" + esc(it.itemRef) + "\\" data-field=\\"status\\">" +',
 '      badgeHtml(it.result) + "<div style=\\"margin-top:6px;color:var(--ink3);font-size:10.5px\\">" + esc(dash(it.priority)) + "</div></td>";',
-'    cells += "<td class=\\"cell-clickable col-w-observation sticky-observation\\" data-item=\\"" + esc(it.itemRef) + "\\" data-field=\\"observation\\"><div class=\\"cell-text\\">" + esc(dash(it.observation)) + "</div></td>";',
-'    cells += "<td class=\\"cell-clickable " + widthClass("") + " sticky-supplement\\" data-item=\\"" + esc(it.itemRef) + "\\" data-field=\\"supplement\\"><div class=\\"cell-text\\">" + esc(supplementaryText(it)) + "</div></td>";',
+'    cells += "<td class=\\"cell-clickable col-w-observation sticky-observation\\" data-item=\\"" + esc(it.itemRef) + "\\" data-field=\\"observation\\"" + (isEmpty(it.observation) ? "" : " title=\\"" + esc(it.observation) + "\\"") + "><div class=\\"cell-text\\">" + esc(dash(it.observation)) + "</div></td>";',
+'    cells += "<td class=\\"cell-clickable " + widthClass("") + " sticky-supplement\\" data-item=\\"" + esc(it.itemRef) + "\\" data-field=\\"supplement\\"" + (isEmpty(supplementaryText(it)) ? "" : " title=\\"" + esc(supplementaryText(it)) + "\\"") + "><div class=\\"cell-text\\">" + esc(supplementaryText(it)) + "</div></td>";',
 '    return "<tr id=\\"ref-row-" + esc(it.itemRef) + "\\">" + cells + "</tr>";',
 '  }).join("") : "<tr><td colspan=\\"" + (cols.length + 4) + "\\"><div class=\\"empty\\">" + esc("Nenhum item encontrado com os filtros selecionados.") + "</div></td></tr>";',
 '',
@@ -1444,16 +1468,20 @@ var PANEL_RUNTIME_JS = [
 'Array.prototype.forEach.call(document.querySelectorAll(".density-btn"), function (b) {',
 '  b.addEventListener("click", function () { setDensity(b.dataset.density); });',
 '});',
+'var freezeResultBtnEl = document.getElementById("freezeResultBtn");',
+'if (freezeResultBtnEl) freezeResultBtnEl.addEventListener("click", function () { setFreezeResult(!prefs.freezeResult); });',
 '',
 'renderMeta();',
 'renderLegend();',
 'renderSignals();',
 'renderColMenu();',
 'setDensity(prefs.density, true);',
+'setFreezeResult(prefs.freezeResult, true);',
 'renderRefHead();',
 'createFilters("overviewFilters", "exceptions");',
 'createFilters("refFilters", "exceptions");',
-'renderCurrent();'
+'renderCurrent();',
+'if (window.requestAnimationFrame) { window.requestAnimationFrame(function () { applyStickyOffsets(); }); }'
 ].join('\n');
 
 function escOuterHtml(str) {
