@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inovatus · Pré-análise — Ferramentas</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F4F6F5;
+  --surface: #FFFFFF;
+  --surface2: #EAF0EE;
+  --ink: #1A2420;
+  --ink2: #4A6058;
+  --ink3: #8AA09A;
+  --accent: #2D5C4E;
+  --accent2: #3A8C7A;
+  --accent-hover: #1E4035;
+  --gold: #B8963C;
+  --green-light: #E8F2EF;
+  --red: #C83A3A;
+  --red-light: #FBF0EF;
+  --amber: #B8963C;
+  --amber-light: #FBF5E8;
+  --border: #D0DDD8;
+  --radius: 12px;
+  --shadow: 0 2px 16px rgba(26,36,32,0.08);
+}
+* { box-sizing: border-box; }
+html, body { margin:0; padding:0; background:var(--bg); color:var(--ink); font-family:'DM Sans', Arial, sans-serif; font-size:14px; }
+::-webkit-scrollbar { width:6px; height:6px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:99px; }
+h1, h2, h3, .serif { font-family:'DM Serif Display', Georgia, serif; font-weight:400; color:var(--ink); }
+.app-shell { display:flex; min-height:100vh; }
+.sidebar { width:220px; flex-shrink:0; background:var(--ink); color:#fff; position:fixed; top:0; left:0; bottom:0; display:flex; flex-direction:column; padding:22px 14px; }
+.sidebar .brand { font-family:'DM Serif Display', Georgia, serif; font-size:22px; color:#fff; padding:0 8px 20px; letter-spacing:.01em; }
+.sidebar nav { display:flex; flex-direction:column; gap:4px; }
+.nav-item { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; color:rgba(255,255,255,.78); font-size:14px; cursor:pointer; border:none; background:transparent; text-align:left; width:100%; transition:all .15s; font-family:inherit; }
+.nav-item:hover { background:rgba(255,255,255,.06); color:#fff; }
+.nav-item.active { background:var(--accent); color:#fff; }
+.nav-item .ico { width:16px; text-align:center; flex-shrink:0; }
+.sidebar-footer { margin-top:auto; padding:10px 8px 0; font-size:11px; color:rgba(255,255,255,.4); }
+.main { margin-left:220px; flex:1; padding:32px 36px; max-width:1200px; }
+.page-header { margin-bottom:28px; }
+.page-header h1 { font-size:30px; margin:0; }
+.page-header .subtitle { font-size:13px; color:var(--ink3); margin-top:6px; }
+.tab-section { display:none; }
+.tab-section.active { display:block; }
+.card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px 22px; box-shadow:var(--shadow); margin-bottom:16px; }
+.card h2 { font-size:20px; margin:0 0 6px 0; }
+.card .card-note { font-size:12.5px; color:var(--ink3); margin-bottom:16px; }
+.btn { display:inline-flex; align-items:center; gap:8px; padding:10px 18px; border-radius:8px; font-family:'DM Sans', sans-serif; font-size:13px; font-weight:500; border:none; cursor:pointer; transition:all .15s; }
+.btn-primary { background:var(--accent); color:#fff; }
+.btn-primary:hover:not(:disabled) { background:var(--accent-hover); }
+.btn-primary:disabled { background:var(--border); color:var(--ink3); cursor:not-allowed; }
+.btn-ghost { background:transparent; color:var(--ink2); border:1px solid var(--border); }
+.btn-ghost:hover { background:var(--surface2); }
+.dropzone { background:var(--surface2); border:2px dashed var(--border); border-radius:var(--radius); padding:30px 20px; text-align:center; cursor:pointer; transition:border-color .15s, background .15s; }
+.dropzone.dragover { border-color:var(--accent2); background:var(--green-light); }
+.dropzone p { margin:0; color:var(--ink2); font-size:13.5px; }
+.dropzone strong { color:var(--ink); }
+input[type="file"] { display:none; }
+.file-list { margin-top:16px; display:flex; flex-direction:column; gap:8px; }
+.file-item { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:10px 12px; display:flex; align-items:center; gap:10px; cursor:grab; }
+.file-item.dragging { opacity:.4; }
+.file-item .handle { color:var(--ink3); font-size:14px; user-select:none; }
+.file-item .order { background:var(--surface2); color:var(--accent); font-size:11px; font-weight:700; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.file-item .name { flex:1; font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.file-item .remove { background:none; border:none; color:var(--ink3); cursor:pointer; font-size:15px; line-height:1; padding:4px; }
+.file-item .remove:hover { color:var(--red); }
+label { display:block; font-size:12px; font-weight:600; color:var(--ink2); text-transform:uppercase; letter-spacing:.07em; margin-bottom:6px; }
+input, select, textarea { width:100%; padding:10px 14px; border:1px solid var(--border); border-radius:8px; font-family:'DM Sans', sans-serif; font-size:14px; color:var(--ink); background:var(--bg); outline:none; transition:border-color .15s; }
+input:focus, select:focus, textarea:focus { border-color:var(--accent); background:#fff; }
+.badge { display:inline-flex; align-items:center; gap:4px; padding:3px 8px; border-radius:99px; font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; }
+.badge-green { background:var(--green-light); color:var(--accent); }
+.badge-red { background:var(--red-light); color:var(--red); }
+.badge-amber { background:var(--amber-light); color:var(--gold); }
+.badge-gray { background:var(--surface2); color:var(--ink2); }
+.alert { display:flex; align-items:flex-start; gap:12px; padding:14px 16px; border-radius:10px; margin-bottom:16px; font-size:13px; }
+.alert-amber { background:var(--amber-light); color:#8A6010; border:1px solid #E8C86A; }
+.alert-red { background:var(--red-light); color:#8A2020; border:1px solid #E87A7A; }
+.alert-green { background:var(--green-light); color:var(--accent-hover); border:1px solid #BEE0D6; }
+.status-line { margin-top:14px; font-size:13px; color:var(--ink2); min-height:18px; }
+.status-line.error { color:var(--red); }
+.status-line.success { color:var(--accent); }
+.summary-box { background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:14px 16px; margin-top:14px; font-size:13px; }
+.summary-box ul { margin:6px 0 0; padding-left:18px; }
+.summary-box li { margin-bottom:4px; }
+.field-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+.filerow-actions { display:flex; gap:10px; margin-top:18px; }
+@media (max-width:860px) {
+  .sidebar { position:static; width:100%; height:auto; flex-direction:row; overflow-x:auto; }
+  .main { margin-left:0; padding:20px; }
+  .sidebar .brand { display:none; }
+}
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand">Inovatus</div>
+    <nav>
+      <button class="nav-item active" data-tab="mesclar"><span class="ico">&#128196;</span> Mesclar PDFs</button>
+      <button class="nav-item" data-tab="painel"><span class="ico">&#128200;</span> Gerar painel</button>
+      <button class="nav-item" data-tab="excel"><span class="ico">&#128202;</span> Gerar Excel</button>
+    </nav>
+    <div class="sidebar-footer">Pré-análise REF · ferramentas locais<br>Nenhum arquivo sai do seu navegador.</div>
+  </aside>
+
+  <main class="main">
+
+    <section id="tab-mesclar" class="tab-section active">
+      <div class="page-header">
+        <h1>Mesclar PDFs</h1>
+        <div class="subtitle">Junta os PDFs iniciais em um único arquivo, na ordem que você definir.</div>
+      </div>
+      <div class="card">
+        <div class="dropzone" id="mesclarDropzone">
+          <p><strong>Clique para escolher</strong> ou arraste os PDFs aqui</p>
+          <input type="file" id="mesclarFileInput" accept="application/pdf" multiple>
+        </div>
+        <div class="file-list" id="mesclarList"></div>
+        <div class="filerow-actions">
+          <button class="btn btn-ghost" id="mesclarClearBtn" style="display:none;">Limpar</button>
+          <button class="btn btn-primary" id="mesclarMergeBtn" disabled>Mesclar e baixar</button>
+        </div>
+        <div class="status-line" id="mesclarStatus"></div>
+      </div>
+    </section>
+
+    <section id="tab-painel" class="tab-section">
+      <div class="page-header">
+        <h1>Gerar painel de visualização</h1>
+        <div class="subtitle">Envie o JSON da pré-análise e receba o painel HTML pronto, no layout padrão Inovatus.</div>
+      </div>
+      <div class="card">
+        <h2>1. JSON da análise</h2>
+        <div class="card-note">Arquivo gerado pela IA ao final da pré-análise (schemaVersion 1.0).</div>
+        <div class="dropzone" id="painelDropzone">
+          <p><strong>Clique para escolher</strong> ou arraste o arquivo .json aqui</p>
+          <input type="file" id="painelFileInput" accept="application/json">
+        </div>
+        <div class="status-line" id="painelStatus"></div>
+        <div class="summary-box" id="painelSummary" style="display:none;"></div>
+        <div class="filerow-actions">
+          <button class="btn btn-primary" id="painelGenerateBtn" disabled>Gerar painel HTML</button>
+          <button class="btn btn-ghost" id="painelPreviewBtn" disabled>Abrir prévia em nova aba</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-excel" class="tab-section">
+      <div class="page-header">
+        <h1>Gerar Excel</h1>
+        <div class="subtitle">Envie o mesmo JSON da análise e receba a planilha com as 4 abas padronizadas.</div>
+      </div>
+      <div class="card">
+        <h2>1. JSON da análise</h2>
+        <div class="card-note">Mesmo arquivo usado para o painel — garante que Excel e painel batam entre si.</div>
+        <div class="dropzone" id="excelDropzone">
+          <p><strong>Clique para escolher</strong> ou arraste o arquivo .json aqui</p>
+          <input type="file" id="excelFileInput" accept="application/json">
+        </div>
+        <div class="status-line" id="excelStatus"></div>
+        <div class="summary-box" id="excelSummary" style="display:none;"></div>
+        <div class="filerow-actions">
+          <button class="btn btn-primary" id="excelGenerateBtn" disabled>Gerar e baixar Excel</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+/* ======================= NAVEGAÇÃO ENTRE ABAS ======================= */
+document.querySelectorAll('.nav-item').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    document.querySelectorAll('.nav-item').forEach(function (b) { b.classList.remove('active'); });
+    document.querySelectorAll('.tab-section').forEach(function (s) { s.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+</script>
+
+<script>
+/* ======================= MESCLAR PDFS ======================= */
+var mesclarFiles = [];
+var mesclarDragSrcIndex = null;
+
+var mesclarDropzone = document.getElementById('mesclarDropzone');
+var mesclarFileInput = document.getElementById('mesclarFileInput');
+var mesclarListEl = document.getElementById('mesclarList');
+var mesclarMergeBtn = document.getElementById('mesclarMergeBtn');
+var mesclarClearBtn = document.getElementById('mesclarClearBtn');
+var mesclarStatusEl = document.getElementById('mesclarStatus');
+
+mesclarDropzone.addEventListener('click', function () { mesclarFileInput.click(); });
+mesclarDropzone.addEventListener('dragover', function (e) { e.preventDefault(); mesclarDropzone.classList.add('dragover'); });
+mesclarDropzone.addEventListener('dragleave', function () { mesclarDropzone.classList.remove('dragover'); });
+mesclarDropzone.addEventListener('drop', function (e) {
+  e.preventDefault();
+  mesclarDropzone.classList.remove('dragover');
+  mesclarAddFiles(Array.from(e.dataTransfer.files).filter(function (f) { return f.type === 'application/pdf'; }));
+});
+mesclarFileInput.addEventListener('change', function (e) {
+  mesclarAddFiles(Array.from(e.target.files));
+  mesclarFileInput.value = '';
+});
+
+function mesclarAddFiles(newFiles) {
+  mesclarFiles = mesclarFiles.concat(newFiles);
+  mesclarRenderList();
+  mesclarSetStatus('');
+}
+
+function mesclarRenderList() {
+  mesclarListEl.innerHTML = '';
+  mesclarFiles.forEach(function (file, index) {
+    var item = document.createElement('div');
+    item.className = 'file-item';
+    item.draggable = true;
+    item.dataset.index = index;
+    item.innerHTML =
+      '<span class="handle">&#10247;</span>' +
+      '<span class="order">' + (index + 1) + '</span>' +
+      '<span class="name"></span>' +
+      '<button class="remove" title="Remover">&#10005;</button>';
+    item.querySelector('.name').textContent = file.name;
+
+    item.addEventListener('dragstart', function () {
+      mesclarDragSrcIndex = index;
+      item.classList.add('dragging');
+    });
+    item.addEventListener('dragend', function () { item.classList.remove('dragging'); });
+    item.addEventListener('dragover', function (e) { e.preventDefault(); });
+    item.addEventListener('drop', function (e) {
+      e.preventDefault();
+      var targetIndex = Number(item.dataset.index);
+      if (mesclarDragSrcIndex === null || mesclarDragSrcIndex === targetIndex) return;
+      var moved = mesclarFiles.splice(mesclarDragSrcIndex, 1)[0];
+      mesclarFiles.splice(targetIndex, 0, moved);
+      mesclarRenderList();
+    });
+
+    item.querySelector('.remove').addEventListener('click', function () {
+      mesclarFiles.splice(index, 1);
+      mesclarRenderList();
+    });
+
+    mesclarListEl.appendChild(item);
+  });
+
+  mesclarMergeBtn.disabled = mesclarFiles.length < 2;
+  mesclarClearBtn.style.display = mesclarFiles.length ? 'block' : 'none';
+}
+
+mesclarClearBtn.addEventListener('click', function () {
+  mesclarFiles = [];
+  mesclarRenderList();
+  mesclarSetStatus('');
+});
+
+mesclarMergeBtn.addEventListener('click', function () {
+  mesclarSetStatus('Mesclando...', '');
+  mesclarMergeBtn.disabled = true;
+
+  var PDFDocument = PDFLib.PDFDocument;
+
+  (async function () {
+    try {
+      var mergedPdf = await PDFDocument.create();
+      for (var i = 0; i < mesclarFiles.length; i++) {
+        var file = mesclarFiles[i];
+        var bytes = await file.arrayBuffer();
+        var pdf = await PDFDocument.load(bytes);
+        var pages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+        pages.forEach(function (page) { mergedPdf.addPage(page); });
+      }
+      var mergedBytes = await mergedPdf.save();
+      var blob = new Blob([mergedBytes], { type: 'application/pdf' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'mesclado.pdf';
+      a.click();
+      URL.revokeObjectURL(url);
+      mesclarSetStatus('PDF gerado e baixado com sucesso.', 'success');
+    } catch (err) {
+      console.error(err);
+      mesclarSetStatus('Erro ao mesclar: ' + err.message, 'error');
+    } finally {
+      mesclarMergeBtn.disabled = mesclarFiles.length < 2;
+    }
+  })();
+});
+
+function mesclarSetStatus(msg, type) {
+  mesclarStatusEl.textContent = msg;
+  mesclarStatusEl.className = 'status-line' + (type ? ' ' + type : '');
+}
+</script>
+
+<script>
+/* ======================= VALIDAÇÃO DO SCHEMA ======================= */
+function validateAnalysisJson(json) {
+  var errors = [];
+  if (!json || typeof json !== 'object') {
+    return { valid: false, errors: ['Arquivo não é um JSON válido.'] };
+  }
+  if (!json.schemaVersion) errors.push('Campo "schemaVersion" ausente.');
+  if (!json.analysisType) errors.push('Campo "analysisType" ausente.');
+  if (!json.project || typeof json.project !== 'object') {
+    errors.push('Campo "project" ausente ou inválido.');
+  }
+  if (!json.summary || typeof json.summary !== 'object') {
+    errors.push('Campo "summary" ausente ou inválido.');
+  }
+  if (!Array.isArray(json.items)) {
+    errors.push('Campo "items" ausente ou não é uma lista.');
+  } else if (json.items.length === 0) {
+    errors.push('"items" está vazio — não há nada para gerar.');
+  } else {
+    json.items.forEach(function (it, idx) {
+      if (it.itemRef === undefined || it.itemRef === null) {
+        errors.push('Item na posição ' + (idx + 1) + ' sem "itemRef".');
+      }
+      if (!it.result) {
+        errors.push('Item ' + (it.itemRef !== undefined ? it.itemRef : idx + 1) + ' sem "result".');
+      }
+    });
+  }
+  if (!Array.isArray(json.documents)) {
+    errors.push('Campo "documents" ausente ou não é uma lista (pode ficar vazio, mas deve existir).');
+  }
+  return { valid: errors.length === 0, errors: errors };
+}
+
+function summarizeAnalysisJson(json) {
+  var counts = (json.summary && json.summary.resultsCount) || {};
+  var itemCount = Array.isArray(json.items) ? json.items.length : 0;
+  var lines = [];
+  lines.push('Projeto: ' + safeText(json.project && (json.project.projectName || json.project.projectId)));
+  lines.push('Rubrica: ' + safeText(json.project && json.project.expenseCategory));
+  lines.push('Modo: ' + safeText(json.input && json.input.mode));
+  lines.push('Itens: ' + itemCount);
+  var resultParts = [];
+  ['Conforme', 'Atenção', 'Inconsistência', 'Não verificável'].forEach(function (k) {
+    if (counts[k] !== undefined) resultParts.push(k + ': ' + counts[k]);
+  });
+  if (resultParts.length) lines.push('Resultados: ' + resultParts.join(' · '));
+  return lines;
+}
+
+function safeText(v) {
+  return (v === undefined || v === null || v === '') ? '—' : String(v);
+}
+</script>
+
+<script>
+/* ======================= GERADOR DO PAINEL HTML ======================= */
+var PANEL_HTML_HEAD = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>__TITLE__</title>
+  <style>
+    :root {
+      --bg: #F4F6F5; --surface: #FFFFFF; --surface2: #EAF0EE;
+      --ink: #1A2420; --ink2: #4A6058; --ink3: #8AA09A;
+      --accent: #2D5C4E; --accent2: #3A8C7A;
+      --gold: #B8963C; --amber-light: #FBF5E8;
+      --red: #C83A3A; --red-light: #FBF0EF;
+      --gray-light: #F0F2F1; --border: #D0DDD8;
+      --shadow: 0 8px 24px rgba(26,36,32,.06);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin:0; padding:0; background:var(--bg); color:var(--ink); font-family:"DM Sans", Arial, sans-serif; }
+    body { line-height:1.45; }
+    .page { max-width: 1500px; margin: 0 auto; padding: 24px; }
+    .header { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 22px 24px; box-shadow: var(--shadow); margin-bottom: 18px; }
+    .brand { color: var(--accent); font-weight: 800; letter-spacing: .02em; font-size: 15px; text-transform: uppercase; }
+    .titleRow { display:flex; justify-content:space-between; gap:24px; align-items:flex-start; flex-wrap:wrap; margin-top: 8px; }
+    h1 { margin: 0; font-family: "DM Serif Display", Georgia, serif; font-weight: 400; font-size: 36px; line-height: 1.05; color: var(--ink); }
+    .meta { display:grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap:12px; margin-top:18px; }
+    .metaCard { background: var(--surface2); border-radius: 12px; padding: 12px 14px; border:1px solid var(--border); }
+    .metaCard .k { font-size: 12px; color: var(--ink2); text-transform: uppercase; letter-spacing:.04em; }
+    .metaCard .v { margin-top: 4px; font-size: 15px; color: var(--ink); font-weight: 700; }
+    .scopeNote, .disclaimer { margin-top:12px; color: var(--ink2); font-size: 14px; }
+    .disclaimer { color: var(--ink3); }
+    .tabs { display:flex; gap:8px; margin: 18px 0 14px; }
+    .tabBtn { border:none; cursor:pointer; background:var(--surface); color:var(--ink2); border:1px solid var(--border); border-radius: 999px; padding: 10px 16px; font-weight:700; box-shadow: var(--shadow); }
+    .tabBtn.active { background: var(--accent); color:#fff; border-color: var(--accent); }
+    .filters { background: var(--surface); border:1px solid var(--border); border-radius: 18px; box-shadow: var(--shadow); padding: 14px; display:grid; grid-template-columns: 2fr 1fr 1.2fr 1.4fr auto auto auto; gap:10px; margin-bottom: 16px; align-items:end; }
+    .field label { display:block; font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink2); margin-bottom:6px; }
+    .field input, .field select { width:100%; border:1px solid var(--border); background: #fff; color: var(--ink); border-radius: 10px; padding: 10px 12px; font: inherit; }
+    .checkWrap { display:flex; align-items:center; gap:8px; border:1px solid var(--border); border-radius: 12px; padding: 10px 12px; background:#fff; min-height: 42px; }
+    .checkWrap input { margin:0; }
+    .smallBtn { border:none; cursor:pointer; background:var(--surface2); color:var(--accent); border:1px solid var(--border); border-radius: 12px; padding: 10px 12px; font-weight:700; }
+    .tabContent { display:none; }
+    .tabContent.active { display:block; }
+    .stats { display:grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap:12px; margin-bottom: 14px; }
+    .stat { background: var(--surface); border:1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); padding: 14px 16px; cursor:pointer; }
+    .stat .n { font-family: "DM Serif Display", Georgia, serif; font-size: 36px; line-height: 1; margin: 0 0 8px 0; color: var(--accent); }
+    .stat .l { font-size: 13px; color: var(--ink2); text-transform: uppercase; letter-spacing:.04em; }
+    .stat.active { outline: 2px solid var(--accent2); }
+    .panelGrid { display:grid; grid-template-columns: 1.05fr .95fr; gap: 16px; }
+    .panel { background: var(--surface); border:1px solid var(--border); border-radius: 18px; box-shadow: var(--shadow); padding: 16px; }
+    .panel h2 { margin: 0 0 12px 0; font-family: "DM Serif Display", Georgia, serif; font-weight: 400; font-size: 26px; }
+    .legendList, .signalList { margin:0; padding-left: 20px; color: var(--ink2); }
+    .legendList li, .signalList li { margin-bottom: 10px; }
+    .exceptionsTableWrap, .tableWrap { overflow:auto; border:1px solid var(--border); border-radius: 14px; background: #fff; }
+    table { width:100%; border-collapse: separate; border-spacing:0; }
+    th, td { padding: 10px 12px; border-bottom:1px solid #E6ECE9; vertical-align: top; font-size: 14px; }
+    th { position: sticky; top:0; z-index: 5; background: var(--surface2); color: var(--ink); text-align:left; font-weight:700; }
+    .refTable th:first-child, .refTable td:first-child { position: sticky; left:0; z-index: 4; background: #fff; }
+    .refTable th:first-child { z-index: 6; background: var(--surface2); }
+    .rowLink { cursor:pointer; }
+    .rowLink:hover td { background:#F9FBFA; }
+    .badge { display:inline-flex; align-items:center; gap:8px; border-radius:999px; padding:6px 10px; font-size:12px; font-weight:700; white-space:nowrap; border:1px solid transparent; }
+    .badge:before { content:""; display:inline-block; width:8px; height:8px; border-radius:50%; background: currentColor; }
+    .badge-conforme { color:#2F7D57; background:#F3FAF6; border-color:#D8EBDD; }
+    .badge-atencao { color:#9A6B00; background:var(--amber-light); border-color:#ECDDB0; }
+    .badge-inconsistencia { color:var(--red); background:var(--red-light); border-color:#E8CACA; }
+    .badge-naoVerificavel { color:#626C68; background:var(--gray-light); border-color:#D9DEDC; }
+    .cell { cursor:pointer; border-left: 4px solid transparent; min-width: 140px; max-width: 260px; transition: background .15s ease, border-left-color .15s ease; }
+    .cell:hover { background:#F8FBF9; }
+    .cell.truncate > .text { display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient: vertical; overflow:hidden; }
+    .state-attention { background: var(--amber-light); border-left-color: var(--gold); }
+    .state-inconsistency { background: var(--red-light); border-left-color: var(--red); }
+    .state-notverifiable { background: var(--gray-light); border-left-color: #8A9390; }
+    .selectedRow td { background:#F9FBFA; }
+    .selectedCell { outline: 2px solid var(--accent2); outline-offset: -2px; }
+    .subtle { color: var(--ink3); font-size: 12px; }
+    .empty { color: var(--ink3); font-style: italic; }
+    .drawerBackdrop { position: fixed; inset: 0; background: rgba(20,30,26,.28); display:none; z-index: 60; }
+    .drawer { position: fixed; right:0; top:0; height:100vh; width:min(520px, 96vw); background: var(--surface); border-left:1px solid var(--border); box-shadow: -10px 0 32px rgba(0,0,0,.1); transform: translateX(100%); transition: transform .22s ease; z-index: 70; display:flex; flex-direction:column; }
+    .drawer.open { transform: translateX(0); }
+    .drawerBackdrop.open { display:block; }
+    .drawerHead { padding: 18px 18px 14px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; gap:16px; align-items:flex-start; }
+    .drawerTitle h3 { margin:0; font-family:"DM Serif Display", Georgia, serif; font-weight:400; font-size:28px; }
+    .drawerTitle p { margin:6px 0 0; color:var(--ink2); font-size:14px; }
+    .closeBtn { border:none; background: var(--surface2); color: var(--ink); border-radius: 999px; width: 36px; height: 36px; cursor:pointer; font-size:20px; }
+    .drawerBody { padding: 18px; overflow:auto; }
+    .detailBlock { border:1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 12px; background:#fff; }
+    .detailBlock .k { font-size:12px; text-transform: uppercase; letter-spacing:.04em; color:var(--ink2); margin-bottom: 6px; }
+    .detailBlock .v { color:var(--ink); white-space: pre-wrap; word-break: break-word; }
+    .contextGrid { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:10px; margin-bottom: 12px; }
+    .contextCard { background: var(--surface2); border:1px solid var(--border); border-radius: 12px; padding: 10px 12px; }
+    .footerNote { color: var(--ink3); font-size: 12px; margin-top: 8px; }
+    @media (max-width: 1180px) {
+      .filters { grid-template-columns: 1fr 1fr; }
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .panelGrid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 760px) {
+      .page { padding: 12px; }
+      h1 { font-size: 30px; }
+      .stats { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="header">
+      <div class="brand">Inovatus</div>
+      <div class="titleRow">
+        <div>
+          <h1>Pré-análise documental</h1>
+          <div class="scopeNote">Esta interface reproduz os dados recebidos no REF ou Prompt. Informações fiscais e bancárias aparecem somente como fonte de comparação ao selecionar uma célula.</div>
+          <div class="disclaimer">A pré-análise não aprova nem rejeita despesas e não substitui a avaliação do analista.</div>
+        </div>
+      </div>
+      <div class="meta" id="metaCards"></div>
+      <div class="footerNote" id="metaFooter"></div>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Abas do painel">
+      <button class="tabBtn active" data-tab="geral" aria-label="Abrir aba Visão geral">Visão geral</button>
+      <button class="tabBtn" data-tab="ref" aria-label="Abrir aba Visão REF">Visão REF</button>
+    </div>
+
+    <div class="filters">
+      <div class="field">
+        <label for="searchInput">Busca livre</label>
+        <input id="searchInput" type="text" placeholder="Buscar por item, fornecedor, observação ou valor..." />
+      </div>
+      <div class="field">
+        <label for="resultFilter">Resultado geral</label>
+        <select id="resultFilter">
+          <option value="">Todos</option>
+          <option value="Conforme">Conforme</option>
+          <option value="Atenção">Atenção</option>
+          <option value="Inconsistência">Inconsistência</option>
+          <option value="Não verificável">Não verificável</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="budgetFilter">Item de orçamento</label>
+        <select id="budgetFilter"><option value="">Todos</option></select>
+      </div>
+      <div class="field">
+        <label for="supplierFilter">Fornecedor</label>
+        <select id="supplierFilter"><option value="">Todos</option></select>
+      </div>
+      <label class="checkWrap" aria-label="Mostrar somente exceções">
+        <input id="exceptionsOnly" type="checkbox" checked />
+        <span>Somente exceções</span>
+      </label>
+      <label class="checkWrap" aria-label="Filtrar possível equipamento ou material permanente">
+        <input id="equipmentOnly" type="checkbox" />
+        <span>Possível equipamento</span>
+      </label>
+      <button id="clearFilters" class="smallBtn" aria-label="Limpar filtros">Limpar filtros</button>
+    </div>
+
+    <section id="tab-geral" class="tabContent active">
+      <div class="stats" id="stats"></div>
+      <div class="panelGrid">
+        <div class="panel">
+          <h2>Lista de exceções</h2>
+          <div class="exceptionsTableWrap">
+            <table id="exceptionsTable">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Fornecedor</th>
+                  <th>Valor</th>
+                  <th>Resultado</th>
+                  <th>Observação consolidada</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="footerNote">Clique em uma linha para abrir a Visão REF posicionada no item correspondente.</div>
+        </div>
+        <div>
+          <div class="panel" style="margin-bottom:16px;">
+            <h2>Legenda</h2>
+            <ul class="legendList">
+              <li><strong>Conforme</strong> — documentos essenciais associados com segurança e sem divergência relevante.</li>
+              <li><strong>Atenção</strong> — dúvida, ambiguidade ou questão de enquadramento que exige avaliação humana.</li>
+              <li><strong>Inconsistência</strong> — incompatibilidade objetiva e demonstrável em informação essencial.</li>
+              <li><strong>Não verificável</strong> — ausência, ilegibilidade ou falta de associação de evidência essencial impede avaliar o núcleo.</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h2>Sinalizações gerais</h2>
+            <ul class="signalList" id="signalList"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-ref" class="tabContent">
+      <div class="tableWrap">
+        <table class="refTable" id="refTable">
+          <thead><tr id="refTableHeadRow"></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <div class="drawerBackdrop" id="drawerBackdrop"></div>
+  <aside class="drawer" id="drawer" aria-label="Fonte da comparação">
+    <div class="drawerHead">
+      <div class="drawerTitle">
+        <h3>Fonte da comparação</h3>
+        <p id="drawerSubtitle">Selecione uma célula para ver o detalhe.</p>
+      </div>
+      <button class="closeBtn" id="closeDrawer" aria-label="Fechar painel">&times;</button>
+    </div>
+    <div class="drawerBody" id="drawerBody"></div>
+  </aside>
+`;
+
+var PANEL_RUNTIME_JS = [
+'function esc(str) {',
+'  return String(str === undefined || str === null ? "" : str).replace(/[&<>"\']/g, function (m) {',
+'    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", "\\"": "&quot;", "\'": "&#39;" }[m];',
+'  });',
+'}',
+'function dash(v) { return (v === undefined || v === null || v === "") ? "—" : v; }',
+'function isEmpty(v) { return v === undefined || v === null || v === "" || (Array.isArray(v) && v.length === 0); }',
+'function fmtGeneric(v) {',
+'  if (isEmpty(v)) return "—";',
+'  if (Array.isArray(v)) return v.map(fmtGeneric).join("; ");',
+'  if (typeof v === "object") return JSON.stringify(v);',
+'  return String(v);',
+'}',
+'function fmtCurrency(v) {',
+'  if (isEmpty(v)) return "—";',
+'  var n = Number(v);',
+'  if (isNaN(n)) return fmtGeneric(v);',
+'  return n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });',
+'}',
+'function fmtDate(v) {',
+'  if (isEmpty(v)) return "—";',
+'  var m = /^(\\d{4})-(\\d{2})-(\\d{2})/.exec(String(v));',
+'  if (m) return m[3] + "/" + m[2] + "/" + m[1];',
+'  return String(v);',
+'}',
+'function fmtByGroup(field, v) {',
+'  if (!field) return fmtGeneric(v);',
+'  if (field.group === "value") return fmtCurrency(v);',
+'  if (field.group === "date") return fmtDate(v);',
+'  return fmtGeneric(v);',
+'}',
+'function badgeClass(status) {',
+'  if (status === "Conforme") return "badge badge-conforme";',
+'  if (status === "Atenção") return "badge badge-atencao";',
+'  if (status === "Inconsistência") return "badge badge-inconsistencia";',
+'  return "badge badge-naoVerificavel";',
+'}',
+'function stateClass(st) {',
+'  if (st === "attention") return "state-attention";',
+'  if (st === "inconsistency") return "state-inconsistency";',
+'  if (st === "notverifiable" || st === "not_verificavel") return "state-notverifiable";',
+'  return "";',
+'}',
+'function truncateText(v) {',
+'  var t = fmtGeneric(v);',
+'  return t && t !== "—" ? "<div class=\\"text\\">" + esc(t) + "</div>" : "<div class=\\"text empty\\">—</div>";',
+'}',
+'',
+'var RESULT_ORDER = ["Total", "Conforme", "Atenção", "Inconsistência", "Não verificável"];',
+'',
+'function fieldByGroup(item, groupName) {',
+'  var fields = item.fields || {};',
+'  var keys = Object.keys(fields);',
+'  for (var i = 0; i < keys.length; i++) {',
+'    if (fields[keys[i]] && fields[keys[i]].group === groupName) return fields[keys[i]];',
+'  }',
+'  return null;',
+'}',
+'function supplierOf(item) {',
+'  var f = fieldByGroup(item, "supplier");',
+'  if (f && !isEmpty(f.refValue)) return fmtGeneric(f.refValue);',
+'  var norm = item.ref && item.ref.normalized;',
+'  return norm ? fmtGeneric(norm.supplier) : "—";',
+'}',
+'function valueOf(item) {',
+'  var f = fieldByGroup(item, "value");',
+'  if (f && !isEmpty(f.refValue)) return f.refValue;',
+'  var norm = item.ref && item.ref.normalized;',
+'  return norm ? norm.totalValue : null;',
+'}',
+'function budgetOf(item) {',
+'  var f = fieldByGroup(item, "classification");',
+'  if (f && !isEmpty(f.refValue)) return fmtGeneric(f.refValue);',
+'  var norm = item.ref && item.ref.normalized;',
+'  return norm ? fmtGeneric(norm.budgetItem) : "—";',
+'}',
+'',
+'function buildColumns(items) {',
+'  var map = {};',
+'  items.forEach(function (it) {',
+'    var fields = it.fields || {};',
+'    Object.keys(fields).forEach(function (key) {',
+'      var f = fields[key];',
+'      if (f && f.panel && f.panel.displayInRefView === false) return;',
+'      if (!map[key]) {',
+'        map[key] = {',
+'          key: key,',
+'          label: f.label || key,',
+'          order: (f.panel && f.panel.columnOrder !== undefined) ? f.panel.columnOrder : 999,',
+'          group: f.group || ""',
+'        };',
+'      }',
+'    });',
+'  });',
+'  var cols = Object.keys(map).map(function (k) { return map[k]; });',
+'  cols.sort(function (a, b) { return a.order - b.order; });',
+'  return cols;',
+'}',
+'',
+'var DATA = { raw: RAW_DATA };',
+'DATA.items = Array.isArray(RAW_DATA.items) ? RAW_DATA.items : [];',
+'DATA.documents = Array.isArray(RAW_DATA.documents) ? RAW_DATA.documents : [];',
+'DATA.columns = buildColumns(DATA.items);',
+'DATA.generalSignals = [];',
+'(RAW_DATA.generalSignals || []).forEach(function (s) {',
+'  DATA.generalSignals.push((s.label ? s.label + " — " : "") + (s.description || ""));',
+'});',
+'((RAW_DATA.input && RAW_DATA.input.structuralLimitations) || []).forEach(function (s) {',
+'  DATA.generalSignals.push((s.label ? s.label + " — " : "") + (s.description || ""));',
+'});',
+'',
+'function docRef(item, type) {',
+'  var docs = DATA.documents.filter(function (d) {',
+'    return d.type === type && Array.isArray(d.relatedItems) && d.relatedItems.indexOf(item.itemRef) !== -1;',
+'  });',
+'  if (!docs.length) return "—";',
+'  return docs.map(function (d) {',
+'    var pages = d.pageStart ? (d.pageStart === d.pageEnd ? ("p. " + d.pageStart) : ("p. " + d.pageStart + "-" + d.pageEnd)) : "";',
+'    return (d.fileName || "") + (pages ? (", " + pages) : "");',
+'  }).join(" / ");',
+'}',
+'',
+'var state = {',
+'  tab: "geral", search: "", result: "", budget: "", supplier: "",',
+'  exceptionsOnly: true, equipmentOnly: false, statFilter: ""',
+'};',
+'',
+'var els = {',
+'  tabs: Array.prototype.slice.call(document.querySelectorAll(".tabBtn")),',
+'  tabContents: { geral: document.getElementById("tab-geral"), ref: document.getElementById("tab-ref") },',
+'  searchInput: document.getElementById("searchInput"),',
+'  resultFilter: document.getElementById("resultFilter"),',
+'  budgetFilter: document.getElementById("budgetFilter"),',
+'  supplierFilter: document.getElementById("supplierFilter"),',
+'  exceptionsOnly: document.getElementById("exceptionsOnly"),',
+'  equipmentOnly: document.getElementById("equipmentOnly"),',
+'  clearFilters: document.getElementById("clearFilters"),',
+'  stats: document.getElementById("stats"),',
+'  exceptionsBody: document.querySelector("#exceptionsTable tbody"),',
+'  signalList: document.getElementById("signalList"),',
+'  refHeadRow: document.getElementById("refTableHeadRow"),',
+'  refBody: document.querySelector("#refTable tbody"),',
+'  drawer: document.getElementById("drawer"),',
+'  drawerBody: document.getElementById("drawerBody"),',
+'  drawerSubtitle: document.getElementById("drawerSubtitle"),',
+'  drawerBackdrop: document.getElementById("drawerBackdrop"),',
+'  closeDrawer: document.getElementById("closeDrawer"),',
+'  metaCards: document.getElementById("metaCards"),',
+'  metaFooter: document.getElementById("metaFooter")',
+'};',
+'',
+'function renderMeta() {',
+'  var p = RAW_DATA.project || {};',
+'  var input = RAW_DATA.input || {};',
+'  var cards = [',
+'    ["Projeto", p.projectName || p.projectId || "—"],',
+'    ["Itens", String(DATA.items.length)],',
+'    ["Modo", input.mode || "—"],',
+'    ["Rubrica", p.expenseCategory || "—"],',
+'    ["Escopo", "Painel HTML somente leitura"]',
+'  ];',
+'  els.metaCards.innerHTML = cards.map(function (c) {',
+'    return "<div class=\\"metaCard\\"><div class=\\"k\\">" + esc(c[0]) + "</div><div class=\\"v\\">" + esc(c[1]) + "</div></div>";',
+'  }).join("");',
+'  els.metaFooter.textContent = RAW_DATA.generatedAt ? ("Gerado em " + fmtGeneric(RAW_DATA.generatedAt)) : "";',
+'}',
+'',
+'function buildFilterOptions() {',
+'  var budgets = {}, suppliers = {};',
+'  DATA.items.forEach(function (it) {',
+'    var b = budgetOf(it), s = supplierOf(it);',
+'    if (b && b !== "—") budgets[b] = true;',
+'    if (s && s !== "—") suppliers[s] = true;',
+'  });',
+'  Object.keys(budgets).sort().forEach(function (v) {',
+'    var opt = document.createElement("option"); opt.value = v; opt.textContent = v; els.budgetFilter.appendChild(opt);',
+'  });',
+'  Object.keys(suppliers).sort().forEach(function (v) {',
+'    var opt = document.createElement("option"); opt.value = v; opt.textContent = v; els.supplierFilter.appendChild(opt);',
+'  });',
+'}',
+'',
+'function getFilteredItems() {',
+'  var term = state.search.trim().toLowerCase();',
+'  var resultFilter = state.statFilter || state.result;',
+'  return DATA.items.filter(function (it) {',
+'    if (resultFilter && it.result !== resultFilter) return false;',
+'    if (state.budget && budgetOf(it) !== state.budget) return false;',
+'    if (state.supplier && supplierOf(it) !== state.supplier) return false;',
+'    if (state.exceptionsOnly && it.result === "Conforme") return false;',
+'    var equip = it.dimensions && it.dimensions.possibleEquipment && it.dimensions.possibleEquipment.flag;',
+'    if (state.equipmentOnly && !equip) return false;',
+'    if (term) {',
+'      var hay = [it.itemRef, budgetOf(it), supplierOf(it), it.observation, valueOf(it), it.result].join(" ").toLowerCase();',
+'      if (hay.indexOf(term) === -1) return false;',
+'    }',
+'    return true;',
+'  });',
+'}',
+'',
+'function renderStats(filtered) {',
+'  var counts = {',
+'    "Total": filtered.length,',
+'    "Conforme": filtered.filter(function (r) { return r.result === "Conforme"; }).length,',
+'    "Atenção": filtered.filter(function (r) { return r.result === "Atenção"; }).length,',
+'    "Inconsistência": filtered.filter(function (r) { return r.result === "Inconsistência"; }).length,',
+'    "Não verificável": filtered.filter(function (r) { return r.result === "Não verificável"; }).length',
+'  };',
+'  els.stats.innerHTML = RESULT_ORDER.map(function (label) {',
+'    return "<button class=\\"stat " + (state.statFilter === label ? "active" : "") + "\\" data-stat=\\"" + esc(label) + "\\" aria-label=\\"Filtrar por " + esc(label) + "\\">" +',
+'      "<div class=\\"n\\">" + counts[label] + "</div><div class=\\"l\\">" + esc(label) + "</div></button>";',
+'  }).join("");',
+'  els.stats.querySelectorAll(".stat").forEach(function (btn) {',
+'    btn.addEventListener("click", function () {',
+'      var label = btn.dataset.stat;',
+'      state.statFilter = (label === "Total") ? "" : (state.statFilter === label ? "" : label);',
+'      renderAll();',
+'    });',
+'  });',
+'}',
+'',
+'function renderSignals() {',
+'  els.signalList.innerHTML = DATA.generalSignals.length ?',
+'    DATA.generalSignals.map(function (s) { return "<li>" + esc(s) + "</li>"; }).join("") :',
+'    "<li class=\\"empty\\">Nenhuma sinalização geral registrada.</li>";',
+'}',
+'',
+'function renderExceptions(items) {',
+'  els.exceptionsBody.innerHTML = items.map(function (it) {',
+'    return "<tr class=\\"rowLink\\" data-item=\\"" + esc(it.itemRef) + "\\">" +',
+'      "<td>" + esc(it.itemRef) + "</td>" +',
+'      "<td>" + esc(supplierOf(it)) + "</td>" +',
+'      "<td>" + esc(fmtCurrency(valueOf(it))) + "</td>" +',
+'      "<td><span class=\\"" + badgeClass(it.result) + "\\">" + esc(it.result) + "</span></td>" +',
+'      "<td>" + truncateText(it.observation) + "</td>" +',
+'      "</tr>";',
+'  }).join("");',
+'  els.exceptionsBody.querySelectorAll("tr[data-item]").forEach(function (tr) {',
+'    tr.addEventListener("click", function () { goToItem(tr.dataset.item); });',
+'  });',
+'}',
+'',
+'function renderRefHead() {',
+'  var cells = ["Item"].concat(DATA.columns.map(function (c) { return c.label; })).concat(["Status geral", "Observações de análise", "Comparações suplementares"]);',
+'  els.refHeadRow.innerHTML = cells.map(function (c) { return "<th>" + esc(c) + "</th>"; }).join("");',
+'}',
+'',
+'function makeFieldCell(item, col) {',
+'  var field = (item.fields || {})[col.key];',
+'  var cls = field ? stateClass(field.state) : "";',
+'  var text = field ? fmtByGroup(field, field.refValue) : "—";',
+'  return "<td class=\\"cell truncate " + cls + "\\" data-item=\\"" + esc(item.itemRef) + "\\" data-field=\\"" + esc(col.key) + "\\" tabindex=\\"0\\">" +',
+'    (text && text !== "—" ? "<div class=\\"text\\">" + esc(text) + "</div>" : "<div class=\\"text empty\\">—</div>") + "</td>";',
+'}',
+'',
+'function renderRef(items) {',
+'  els.refBody.innerHTML = items.map(function (it) {',
+'    var cells = "<td class=\\"cell\\" id=\\"row-item-" + esc(it.itemRef) + "\\" data-item=\\"" + esc(it.itemRef) + "\\" data-field=\\"item\\" tabindex=\\"0\\">" + esc(it.itemRef) + "</td>";',
+'    DATA.columns.forEach(function (col) { cells += makeFieldCell(it, col); });',
+'    var statusCls = stateClass(it.result === "Inconsistência" ? "inconsistency" : (it.result === "Atenção" ? "attention" : (it.result === "Não verificável" ? "notverifiable" : "")));',
+'    cells += "<td class=\\"cell " + statusCls + "\\" data-item=\\"" + esc(it.itemRef) + "\\" data-field=\\"status\\" tabindex=\\"0\\">" +',
+'      "<span class=\\"" + badgeClass(it.result) + "\\">" + esc(it.result) + "</span>" +',
+'      "<div class=\\"subtle\\">Prioridade: " + esc(dash(it.priority)) + " | Confiança: " + esc(dash(it.confidence)) + "</div></td>";',
+'    cells += "<td class=\\"cell truncate\\" data-item=\\"" + esc(it.itemRef) + "\\" data-field=\\"observation\\" tabindex=\\"0\\">" + truncateText(it.observation) + "</td>";',
+'    var suppText = (it.supplementaryComparisons || []).map(function (s) { return typeof s === "string" ? s : (s.label || s.description || JSON.stringify(s)); }).join("; ");',
+'    cells += "<td class=\\"cell truncate\\" data-item=\\"" + esc(it.itemRef) + "\\" data-field=\\"supplement\\" tabindex=\\"0\\">" + truncateText(suppText) + "</td>";',
+'    return "<tr id=\\"tr-item-" + esc(it.itemRef) + "\\">" + cells + "</tr>";',
+'  }).join("");',
+'',
+'  els.refBody.querySelectorAll(".cell[data-item][data-field]").forEach(function (cell) {',
+'    if (cell.dataset.field === "item") return;',
+'    cell.addEventListener("click", function () { openDrawer(cell.dataset.item, cell.dataset.field, cell); });',
+'    cell.addEventListener("keydown", function (ev) {',
+'      if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); openDrawer(cell.dataset.item, cell.dataset.field, cell); }',
+'    });',
+'  });',
+'}',
+'',
+'function findItem(itemRef) {',
+'  return DATA.items.filter(function (it) { return String(it.itemRef) === String(itemRef); })[0];',
+'}',
+'',
+'function sourceLine(src) {',
+'  var pages = src.pageStart ? (src.pageStart === src.pageEnd ? ("p. " + src.pageStart) : ("p. " + src.pageStart + "-" + src.pageEnd)) : "";',
+'  return "<strong>" + esc(src.sourceType || "") + "</strong> — " + esc(src.field || "") + ": " + esc(fmtGeneric(src.value)) +',
+'    (src.fileName ? ("<br><span class=\\"subtle\\">" + esc(src.fileName) + (pages ? (", " + pages) : "") + "</span>") : "");',
+'}',
+'',
+'function openDrawer(itemRef, fieldKey, sourceEl) {',
+'  var item = findItem(itemRef);',
+'  if (!item) return;',
+'',
+'  document.querySelectorAll(".selectedCell").forEach(function (el) { el.classList.remove("selectedCell"); });',
+'  document.querySelectorAll(".selectedRow").forEach(function (el) { el.classList.remove("selectedRow"); });',
+'  if (sourceEl) {',
+'    sourceEl.classList.add("selectedCell");',
+'    var tr = sourceEl.closest("tr");',
+'    if (tr) tr.classList.add("selectedRow");',
+'  }',
+'',
+'  var ctxHtml = "<div class=\\"contextGrid\\">" +',
+'    "<div class=\\"contextCard\\"><div class=\\"k\\">Fornecedor</div><div class=\\"v\\">" + esc(supplierOf(item)) + "</div></div>" +',
+'    "<div class=\\"contextCard\\"><div class=\\"k\\">Valor do item</div><div class=\\"v\\">" + esc(fmtCurrency(valueOf(item))) + "</div></div>" +',
+'    "<div class=\\"contextCard\\"><div class=\\"k\\">Resultado geral</div><div class=\\"v\\"><span class=\\"" + badgeClass(item.result) + "\\">" + esc(item.result) + "</span></div></div>" +',
+'    "<div class=\\"contextCard\\"><div class=\\"k\\">Confiança</div><div class=\\"v\\">" + esc(dash(item.confidence)) + " · Prioridade: " + esc(dash(item.priority)) + "</div></div>" +',
+'    "</div>";',
+'',
+'  var body = "";',
+'  var label = fieldKey;',
+'',
+'  if (fieldKey === "status") {',
+'    label = "Status geral";',
+'    body += "<div class=\\"detailBlock\\"><div class=\\"k\\">Resultado geral</div><div class=\\"v\\"><span class=\\"" + badgeClass(item.result) + "\\">" + esc(item.result) + "</span></div></div>";',
+'    body += "<div class=\\"detailBlock\\"><div class=\\"k\\">Observação consolidada</div><div class=\\"v\\">" + esc(dash(item.observation)) + "</div></div>";',
+'    body += "<div class=\\"detailBlock\\"><div class=\\"k\\">Ação sugerida</div><div class=\\"v\\">" + esc(dash(item.suggestedAction)) + "</div></div>";',
+'    if (item.supplementarySignals && item.supplementarySignals.length) {',
+'      body += "<div class=\\"detailBlock\\"><div class=\\"k\\">Sinalizações complementares</div><div class=\\"v\\">" + esc(item.supplementarySignals.map(function(s){return s.label||s;}).join("; ")) + "</div></div>";',
+'    }',
+'    if (item.documentsToOpen && item.documentsToOpen.length) {',
+'      body += "<div class=\\"detailBlock\\"><div class=\\"k\\">Documentos a abrir</div><div class=\\"v\\">" + item.documentsToOpen.map(function (d) {',
+'        return esc((d.fileName || "") + (d.pages ? (", p. " + d.pages.join("-")) : "") + (d.reason ? (" — " + d.reason) : ""));',
+'      }).join("<br>") + "</div></div>";',
+'    }',
+'  } else if (fieldKey === "observation") {',
+'    label = "Observações de análise";',
+'    body += "<div class=\\"detailBlock\\"><div class=\\"k\\">Observação consolidada</div><div class=\\"v\\">" + esc(dash(item.observation)) + "</div></div>";',
+'    body += "<div class=\\"detailBlock\\"><div class=\\"k\\">Ação sugerida</div><div class=\\"v\\">" + esc(dash(item.suggestedAction)) + "</div></div>";',
+'  } else if (fieldKey === "supplement") {',
+'    label = "Comparações suplementares";',
+'    var supp = (item.supplementaryComparisons || []).map(function (s) { return typeof s === "string" ? s : (s.label || s.description || JSON.stringify(s)); });',
+'    body += "<div class=\\"detailBlock\\"><div class=\\"k\\">Achados complementares</div><div class=\\"v\\">" + (supp.length ? esc(supp.join("; ")) : "Nenhum achado complementar registrado.") + "</div></div>";',
+'    var dims = item.dimensions || {};',
+'    if (dims.possibleEquipment && dims.possibleEquipment.flag) {',
+'      body += "<div class=\\"detailBlock\\"><div class=\\"k\\">Possível equipamento ou material permanente</div><div class=\\"v\\">" + esc(dash(dims.possibleEquipment.assessment)) + "</div></div>";',
+'    }',
+'    if (dims.importation && dims.importation.isImported) {',
+'      body += "<div class=\\"detailBlock\\"><div class=\\"k\\">Importação</div><div class=\\"v\\">" + esc(dash(dims.importation.assessment)) + "</div></div>";',
+'    }',
+'  } else {',
+'    var field = (item.fields || {})[fieldKey] || {};',
+'    label = field.label || fieldKey;',
+'    if (isEmpty(field.refValue)) {',
+'      body += "<div class=\\"detailBlock\\"><div class=\\"k\\">Aviso</div><div class=\\"v\\">Informação não fornecida no REF. O dado abaixo foi localizado apenas no documento fiscal ou comprovante e não foi transferido para o REF.</div></div>";',
+'    }',
+'    body += "<div class=\\"detailBlock\\"><div class=\\"k\\">Valor no REF ou Prompt</div><div class=\\"v\\">" + esc(fmtByGroup(field, field.refValue)) + "</div></div>";',
+'    body += "<div class=\\"detailBlock\\"><div class=\\"k\\">Valor localizado no documento fiscal</div><div class=\\"v\\">" + esc(fmtByGroup(field, field.fiscalValue)) + "</div></div>";',
+'    body += "<div class=\\"detailBlock\\"><div class=\\"k\\">Valor localizado no comprovante ou extrato</div><div class=\\"v\\">" + esc(fmtByGroup(field, field.paymentValue)) + "</div></div>";',
+'    var comparisonSummary = field.comparison ? field.comparison.summary : null;',
+'    body += "<div class=\\"detailBlock\\"><div class=\\"k\\">Avaliação da comparação</div><div class=\\"v\\">" + esc(dash(comparisonSummary || field.assessment)) + "</div></div>";',
+'    if (field.assessment && field.assessment !== comparisonSummary) {',
+'      body += "<div class=\\"detailBlock\\"><div class=\\"k\\">Avaliação detalhada</div><div class=\\"v\\">" + esc(field.assessment) + "</div></div>";',
+'    }',
+'    if (field.group === "description" && item.fiscalItems && item.fiscalItems.length) {',
+'      body += "<div class=\\"detailBlock\\"><div class=\\"k\\">Itens fiscais relacionados</div><div class=\\"v\\">" + item.fiscalItems.map(function (fi) {',
+'        return "• " + esc(fi.descriptionOriginal || "—") + " <span class=\\"subtle\\">(p. " + esc(dash(fi.page)) + ")</span>";',
+'      }).join("<br>") + "</div></div>";',
+'    }',
+'    if (field.sources && field.sources.length) {',
+'      body += "<div class=\\"detailBlock\\"><div class=\\"k\\">Fontes</div><div class=\\"v\\">" + field.sources.map(sourceLine).join("<hr style=\\"border:none;border-top:1px solid var(--border);margin:8px 0;\\">") + "</div></div>";',
+'    }',
+'  }',
+'',
+'  els.drawerSubtitle.textContent = "Item " + item.itemRef + " · " + label;',
+'  els.drawerBody.innerHTML = ctxHtml + body + "<div class=\\"footerNote\\">Somente leitura. Os dados do REF/Prompt foram preservados; a nota fiscal e o comprovante aparecem como fontes de comparação.</div>";',
+'',
+'  els.drawerBackdrop.classList.add("open");',
+'  els.drawer.classList.add("open");',
+'}',
+'',
+'function closeDrawerFn() {',
+'  els.drawerBackdrop.classList.remove("open");',
+'  els.drawer.classList.remove("open");',
+'  document.querySelectorAll(".selectedCell").forEach(function (el) { el.classList.remove("selectedCell"); });',
+'  document.querySelectorAll(".selectedRow").forEach(function (el) { el.classList.remove("selectedRow"); });',
+'}',
+'',
+'function goToItem(itemRef) {',
+'  setTab("ref");',
+'  renderAll(function () {',
+'    var row = document.getElementById("tr-item-" + itemRef);',
+'    if (row) {',
+'      row.scrollIntoView({ behavior: "smooth", block: "center" });',
+'      var firstCell = row.querySelector(".cell[data-field]:not([data-field=\\"item\\"])");',
+'      if (firstCell) openDrawer(itemRef, firstCell.dataset.field, firstCell);',
+'    }',
+'  });',
+'}',
+'',
+'function setTab(tabName) {',
+'  state.tab = tabName;',
+'  els.tabs.forEach(function (btn) { btn.classList.toggle("active", btn.dataset.tab === tabName); });',
+'  Object.keys(els.tabContents).forEach(function (k) { els.tabContents[k].classList.toggle("active", k === tabName); });',
+'}',
+'',
+'function renderAll(afterRender) {',
+'  var filtered = getFilteredItems();',
+'  renderStats(filtered);',
+'  renderExceptions(filtered);',
+'  renderSignals();',
+'  renderRef(filtered);',
+'  if (typeof afterRender === "function") afterRender();',
+'}',
+'',
+'els.tabs.forEach(function (btn) { btn.addEventListener("click", function () { setTab(btn.dataset.tab); }); });',
+'els.searchInput.addEventListener("input", function (e) { state.search = e.target.value; renderAll(); });',
+'els.resultFilter.addEventListener("change", function (e) { state.result = e.target.value; state.statFilter = ""; renderAll(); });',
+'els.budgetFilter.addEventListener("change", function (e) { state.budget = e.target.value; renderAll(); });',
+'els.supplierFilter.addEventListener("change", function (e) { state.supplier = e.target.value; renderAll(); });',
+'els.exceptionsOnly.addEventListener("change", function (e) { state.exceptionsOnly = e.target.checked; renderAll(); });',
+'els.equipmentOnly.addEventListener("change", function (e) { state.equipmentOnly = e.target.checked; renderAll(); });',
+'els.clearFilters.addEventListener("click", function () {',
+'  state.search = ""; state.result = ""; state.budget = ""; state.supplier = "";',
+'  state.exceptionsOnly = true; state.equipmentOnly = false; state.statFilter = "";',
+'  els.searchInput.value = ""; els.resultFilter.value = ""; els.budgetFilter.value = ""; els.supplierFilter.value = "";',
+'  els.exceptionsOnly.checked = true; els.equipmentOnly.checked = false;',
+'  renderAll();',
+'});',
+'els.closeDrawer.addEventListener("click", closeDrawerFn);',
+'els.drawerBackdrop.addEventListener("click", closeDrawerFn);',
+'window.addEventListener("keydown", function (ev) { if (ev.key === "Escape") closeDrawerFn(); });',
+'',
+'renderMeta();',
+'renderRefHead();',
+'buildFilterOptions();',
+'renderAll();'
+].join('\n');
+
+function escOuterHtml(str) {
+  return String(str === undefined || str === null ? "" : str).replace(/[&<>"']/g, function (m) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m];
+  });
+}
+
+function buildPanelHtml(json) {
+  var title = "Painel de Pré-análise" + (json.project && json.project.projectId ? (" " + json.project.projectId) : "");
+  var head = PANEL_HTML_HEAD.replace('__TITLE__', escOuterHtml(title));
+  var dataJson = JSON.stringify(json)
+    .replace(/</g, '\\u003c')
+    .split(String.fromCharCode(8232)).join('\\u2028')
+    .split(String.fromCharCode(8233)).join('\\u2029');
+  return head +
+    '\n<script>var RAW_DATA = ' + dataJson + ';<' + '/script>' +
+    '\n<script>\n' + PANEL_RUNTIME_JS + '\n<' + '/script>' +
+    '\n</body>\n</html>';
+}
+</script>
+
+<script>
+/* ======================= GERADOR DO EXCEL ======================= */
+
+function excelFileName(json) {
+  var proj = (json.project && (json.project.projectId || json.project.projectName)) || 'Analise';
+  var d = new Date();
+  var pad = function (n) { return String(n).padStart(2, '0'); };
+  var stamp = d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate());
+  return ('PreAnalise_' + proj + '_' + stamp).replace(/[^a-zA-Z0-9_-]/g, '_') + '.xlsx';
+}
+
+var COLOR = {
+  headerFill: 'FFEAF0EE',
+  red: 'FFFBF0EF',
+  amber: 'FFFBF5E8',
+  gray: 'FFF0F2F1',
+  border: 'FFD0DDD8',
+  ink: 'FF1A2420'
+};
+
+function styleHeader(ws) {
+  var row = ws.getRow(1);
+  row.eachCell(function (cell) {
+    cell.font = { bold: true, color: { argb: COLOR.ink } };
+    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: COLOR.headerFill } };
+    cell.alignment = { vertical: 'top', wrapText: true };
+    cell.border = { bottom: { style: 'thin', color: { argb: COLOR.border } } };
+  });
+  row.height = 30;
+  ws.views = [{ state: 'frozen', ySplit: 1 }];
+}
+
+function fillForResult(result) {
+  if (result === 'Inconsistência') return COLOR.red;
+  if (result === 'Atenção') return COLOR.amber;
+  if (result === 'Não verificável') return COLOR.gray;
+  return null;
+}
+
+function applyRowBaseStyle(row) {
+  row.eachCell(function (cell) {
+    cell.alignment = { vertical: 'top', wrapText: true };
+    cell.border = { bottom: { style: 'thin', color: { argb: COLOR.border } } };
+  });
+}
+
+function setFill(cell, argb) {
+  if (!argb) return;
+  cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: argb } };
+}
+
+function docRefText(json, itemRef, type) {
+  var docs = (json.documents || []).filter(function (d) {
+    return d.type === type && Array.isArray(d.relatedItems) && d.relatedItems.indexOf(itemRef) !== -1;
+  });
+  if (!docs.length) return '—';
+  return docs.map(function (d) {
+    var pages = d.pageStart ? (d.pageStart === d.pageEnd ? ('p. ' + d.pageStart) : ('p. ' + d.pageStart + '-' + d.pageEnd)) : '';
+    return (d.fileName || '') + (pages ? (', ' + pages) : '');
+  }).join(' / ');
+}
+
+function fieldByGroupJson(item, groupName) {
+  var fields = item.fields || {};
+  var keys = Object.keys(fields);
+  for (var i = 0; i < keys.length; i++) {
+    if (fields[keys[i]] && fields[keys[i]].group === groupName) return fields[keys[i]];
+  }
+  return null;
+}
+function supplierOfJson(item) {
+  var f = fieldByGroupJson(item, 'supplier');
+  if (f && f.refValue !== undefined && f.refValue !== null && f.refValue !== '') return f.refValue;
+  var norm = item.ref && item.ref.normalized;
+  return norm ? norm.supplier : null;
+}
+function valueOfJson(item) {
+  var f = fieldByGroupJson(item, 'value');
+  if (f && f.refValue !== undefined && f.refValue !== null && f.refValue !== '') return f.refValue;
+  var norm = item.ref && item.ref.normalized;
+  return norm ? norm.totalValue : null;
+}
+function budgetOfJson(item) {
+  var f = fieldByGroupJson(item, 'classification');
+  if (f && f.refValue !== undefined && f.refValue !== null && f.refValue !== '') return f.refValue;
+  var norm = item.ref && item.ref.normalized;
+  return norm ? norm.budgetItem : null;
+}
+function toDateOrNull(v) {
+  if (!v) return null;
+  var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(v));
+  if (!m) return null;
+  return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+}
+function joinList(arr, keyFn) {
+  if (!arr || !arr.length) return '—';
+  return arr.map(keyFn).join('; ');
+}
+
+function buildResumoSheet(wb, json) {
+  var ws = wb.addWorksheet('Resumo');
+  var headers = ['Item REF', 'Item de orçamento', 'Resultado geral', 'Sinalizações complementares', 'Prioridade', 'Confiança', 'Fornecedor REF', 'Valor REF', 'Observação consolidada', 'Ação sugerida', 'Documento fiscal (arquivo/página)', 'Comprovante (arquivo/página)', 'Documentos a abrir'];
+  ws.addRow(headers);
+  styleHeader(ws);
+  ws.columns = [
+    { width: 10 }, { width: 28 }, { width: 16 }, { width: 26 }, { width: 12 }, { width: 12 },
+    { width: 30 }, { width: 14 }, { width: 40 }, { width: 34 }, { width: 24 }, { width: 24 }, { width: 26 }
+  ];
+
+  (json.items || []).forEach(function (item) {
+    var row = ws.addRow([
+      item.itemRef,
+      budgetOfJson(item) || '—',
+      item.result || '—',
+      joinList(item.supplementarySignals, function (s) { return s.label || s; }),
+      item.priority || '—',
+      item.confidence || '—',
+      supplierOfJson(item) || '—',
+      (function () { var v = valueOfJson(item); return (v === null || v === undefined) ? null : Number(v); })(),
+      item.observation || '—',
+      item.suggestedAction || '—',
+      docRefText(json, item.itemRef, 'fiscal_document'),
+      docRefText(json, item.itemRef, 'payment_proof'),
+      joinList(item.documentsToOpen, function (d) { return (d.fileName || '') + (d.pages ? (' p.' + d.pages.join('-')) : '') + (d.reason ? (' — ' + d.reason) : ''); })
+    ]);
+    applyRowBaseStyle(row);
+    row.getCell(8).numFmt = 'R$ #,##0.00';
+    var fill = fillForResult(item.result);
+    if (fill) setFill(row.getCell(3), fill);
+  });
+
+  ws.autoFilter = { from: { row: 1, column: 1 }, to: { row: 1, column: headers.length } };
+
+  var legendCol = headers.length + 2;
+  var legendRows = [
+    ['Legenda de Resultado geral', 'Definição'],
+    ['Conforme', 'Documentos essenciais associados com segurança e sem divergência relevante.'],
+    ['Atenção', 'Dúvida, ambiguidade, descrição genérica ou questão de enquadramento que exige avaliação humana.'],
+    ['Inconsistência', 'Incompatibilidade objetiva e demonstrável em informação essencial.'],
+    ['Não verificável', 'Ausência, ilegibilidade ou falta de associação de evidência essencial impede avaliar o núcleo do lançamento.'],
+    ['Não aplicável', 'Indicação usada somente na coluna Prioridade para itens Conforme; não é Resultado geral.']
+  ];
+  legendRows.forEach(function (r, idx) {
+    var row = ws.getRow(idx + 1);
+    row.getCell(legendCol).value = r[0];
+    row.getCell(legendCol + 1).value = r[1];
+    if (idx === 0) { row.getCell(legendCol).font = { bold: true }; row.getCell(legendCol + 1).font = { bold: true }; }
+  });
+  ws.getColumn(legendCol).width = 20;
+  ws.getColumn(legendCol + 1).width = 60;
+}
+
+function fmtCellValue(field, v) {
+  if (v === undefined || v === null || v === '') return '—';
+  if (Array.isArray(v)) return v.map(function (x) { return fmtCellValue(field, x); }).join('; ');
+  return v;
+}
+
+function buildColumnsJson(items) {
+  var map = {};
+  items.forEach(function (it) {
+    var fields = it.fields || {};
+    Object.keys(fields).forEach(function (key) {
+      var f = fields[key];
+      if (!map[key]) {
+        map[key] = {
+          key: key,
+          label: f.label || key,
+          order: (f.panel && f.panel.columnOrder !== undefined) ? f.panel.columnOrder : 999
+        };
+      }
+    });
+  });
+  var cols = Object.keys(map).map(function (k) { return map[k]; });
+  cols.sort(function (a, b) { return a.order - b.order; });
+  return cols;
+}
+
+function buildAnaliseItemSheet(wb, json) {
+  var ws = wb.addWorksheet('Análise por Item');
+  var columns = buildColumnsJson(json.items || []);
+  var fixedBefore = ['Item REF', 'Modo', 'Item de orçamento', 'Resultado geral', 'Sinalizações complementares', 'Prioridade', 'Confiança'];
+  var fixedAfter = ['Arquivo/página do documento fiscal', 'Arquivo/página do comprovante', 'Observação consolidada', 'Ação sugerida', 'Documentos a abrir'];
+  var headers = fixedBefore.slice();
+  columns.forEach(function (c) {
+    headers.push(c.label + ' (REF)');
+    headers.push(c.label + ' (Fiscal)');
+    headers.push(c.label + ' (Comprovante)');
+  });
+  headers = headers.concat(fixedAfter);
+  ws.addRow(headers);
+  styleHeader(ws);
+
+  var widths = [10, 12, 24, 16, 22, 12, 12];
+  columns.forEach(function () { widths.push(24, 24, 24); });
+  widths = widths.concat([22, 22, 36, 30, 26]);
+  ws.columns = widths.map(function (w) { return { width: w }; });
+
+  (json.items || []).forEach(function (item) {
+    var rowVals = [
+      item.itemRef,
+      item.mode || '—',
+      budgetOfJson(item) || '—',
+      item.result || '—',
+      joinList(item.supplementarySignals, function (s) { return s.label || s; }),
+      item.priority || '—',
+      item.confidence || '—'
+    ];
+    var highlightCols = [];
+    columns.forEach(function (c) {
+      var field = (item.fields || {})[c.key];
+      var startCol = rowVals.length + 1;
+      rowVals.push(field ? fmtCellValue(field, field.refValue) : '—');
+      rowVals.push(field ? fmtCellValue(field, field.fiscalValue) : '—');
+      rowVals.push(field ? fmtCellValue(field, field.paymentValue) : '—');
+      if (field && field.excel && field.excel.highlight && field.excel.highlight !== 'none') {
+        highlightCols.push({ start: startCol, color: field.excel.highlight });
+      }
+    });
+    rowVals.push(docRefText(json, item.itemRef, 'fiscal_document'));
+    rowVals.push(docRefText(json, item.itemRef, 'payment_proof'));
+    rowVals.push(item.observation || '—');
+    rowVals.push(item.suggestedAction || '—');
+    rowVals.push(joinList(item.documentsToOpen, function (d) { return (d.fileName || '') + (d.pages ? (' p.' + d.pages.join('-')) : ''); }));
+
+    var row = ws.addRow(rowVals);
+    applyRowBaseStyle(row);
+    highlightCols.forEach(function (hc) {
+      var argb = hc.color === 'red' ? COLOR.red : (hc.color === 'yellow' ? COLOR.amber : (hc.color === 'gray' ? COLOR.gray : null));
+      if (!argb) return;
+      setFill(row.getCell(hc.start), argb);
+      setFill(row.getCell(hc.start + 1), argb);
+      setFill(row.getCell(hc.start + 2), argb);
+    });
+  });
+
+  ws.autoFilter = { from: { row: 1, column: 1 }, to: { row: 1, column: headers.length } };
+}
+
+function buildRastreabilidadeSheet(wb, json) {
+  var ws = wb.addWorksheet('Rastreabilidade');
+  var headers = [
+    'Item REF', 'Modo', 'NF associada', 'Comprovante associado',
+    'Associação REF × documento', 'Confiança REF × documento',
+    'Associação documento × comprovante', 'Confiança documento × comprovante',
+    'Fonte REF', 'Arquivo/página do documento', 'Arquivo/página do comprovante',
+    'Campos essenciais relidos', 'Conta oficial fornecida?', 'Fonte da conta oficial',
+    'Item importado?', 'Compatibilidade com Item de Orçamento verificada?',
+    'Possível equipamento/material permanente?', 'Evidência da triagem de vida útil/enquadramento',
+    'Descrição do REF suficientemente compreensível?', 'Resultado da validação final',
+    'Sinalizações complementares', 'Observação'
+  ];
+  ws.addRow(headers);
+  styleHeader(ws);
+  ws.columns = headers.map(function () { return { width: 22 }; });
+  ws.getColumn(22).width = 40;
+  ws.getColumn(21).width = 28;
+
+  var officialAccountProvided = json.input && json.input.officialAccount && json.input.officialAccount.provided;
+  var officialAccountSource = json.input && json.input.officialAccount && json.input.officialAccount.source;
+
+  (json.items || []).forEach(function (item) {
+    var assoc = item.associations || {};
+    var dims = item.dimensions || {};
+    var trace = item.traceability || {};
+
+    var row = ws.addRow([
+      item.itemRef,
+      item.mode || '—',
+      (item.ref && item.ref.normalized && item.ref.normalized.invoiceNumber) || '—',
+      docRefText(json, item.itemRef, 'payment_proof'),
+      assoc.refToFiscal ? assoc.refToFiscal.status : '—',
+      assoc.refToFiscal ? assoc.refToFiscal.confidence : '—',
+      assoc.fiscalToPayment ? assoc.fiscalToPayment.status : '—',
+      assoc.fiscalToPayment ? assoc.fiscalToPayment.confidence : '—',
+      'JSON da análise (schemaVersion ' + (json.schemaVersion || '—') + ')',
+      docRefText(json, item.itemRef, 'fiscal_document'),
+      docRefText(json, item.itemRef, 'payment_proof'),
+      joinList(trace.essentialFieldsReread, function (s) { return s; }),
+      officialAccountProvided === true ? 'Sim' : (officialAccountProvided === false ? 'Não' : '—'),
+      officialAccountSource || '—',
+      dims.importation && dims.importation.isImported ? 'Sim' : 'Não',
+      dims.budgetClassification ? dims.budgetClassification.status : '—',
+      dims.possibleEquipment && dims.possibleEquipment.flag ? 'Sim' : 'Não',
+      (dims.possibleEquipment && dims.possibleEquipment.assessment) || '—',
+      dims.refDescriptionQuality ? dims.refDescriptionQuality.status : '—',
+      trace.finalValidation || item.result || '—',
+      joinList(item.supplementarySignals, function (s) { return s.label || s; }),
+      item.observation || '—'
+    ]);
+    applyRowBaseStyle(row);
+  });
+
+  ws.autoFilter = { from: { row: 1, column: 1 }, to: { row: 1, column: headers.length } };
+}
+
+function buildBaseDanfesSheet(wb, json) {
+  var ws = wb.addWorksheet('Base DANFEs');
+  var headers = ['Item REF', 'Sequência do item', 'Arquivo', 'Página', 'NF/Documento', 'Data de emissão', 'Fornecedor', 'CNPJ', 'Destinatário', 'CNPJ do destinatário', 'Descrição original', 'Unidade', 'Quantidade', 'Valor unitário', 'Valor total do item', 'Valor total da NF/documento', 'Confiança', 'Observação'];
+  ws.addRow(headers);
+  styleHeader(ws);
+  ws.columns = [
+    { width: 10 }, { width: 12 }, { width: 24 }, { width: 8 }, { width: 16 }, { width: 14 },
+    { width: 30 }, { width: 18 }, { width: 26 }, { width: 18 }, { width: 40 }, { width: 10 },
+    { width: 10 }, { width: 14 }, { width: 14 }, { width: 16 }, { width: 10 }, { width: 30 }
+  ];
+
+  (json.items || []).forEach(function (item) {
+    (item.fiscalItems || []).forEach(function (fi) {
+      var issueDate = fi.issueDate ? toDateOrNull(fi.issueDate) : null;
+      var row = ws.addRow([
+        item.itemRef, fi.sequence || '—', fi.fileName || '—', fi.page || '—', fi.invoiceNumber || '—',
+        issueDate,
+        fi.supplierName || '—', fi.supplierCnpj || '—', fi.recipientName || '—', fi.recipientCnpj || '—',
+        fi.descriptionOriginal || '—', fi.unit || '—', fi.quantity !== undefined && fi.quantity !== null ? fi.quantity : '—',
+        fi.unitValue !== undefined && fi.unitValue !== null ? Number(fi.unitValue) : null,
+        fi.totalValue !== undefined && fi.totalValue !== null ? Number(fi.totalValue) : null,
+        fi.invoiceTotalValue !== undefined && fi.invoiceTotalValue !== null ? Number(fi.invoiceTotalValue) : null,
+        fi.confidence || '—', fi.observation || '—'
+      ]);
+      applyRowBaseStyle(row);
+      if (issueDate) row.getCell(6).numFmt = 'dd/mm/yyyy';
+      row.getCell(14).numFmt = 'R$ #,##0.00';
+      row.getCell(15).numFmt = 'R$ #,##0.00';
+      row.getCell(16).numFmt = 'R$ #,##0.00';
+    });
+  });
+
+  ws.autoFilter = { from: { row: 1, column: 1 }, to: { row: 1, column: headers.length } };
+}
+
+async function generateExcelFile(json) {
+  var wb = new ExcelJS.Workbook();
+  wb.creator = 'Inovatus — Ferramentas de pré-análise';
+  wb.created = new Date();
+  buildResumoSheet(wb, json);
+  buildAnaliseItemSheet(wb, json);
+  buildRastreabilidadeSheet(wb, json);
+  buildBaseDanfesSheet(wb, json);
+  var buffer = await wb.xlsx.writeBuffer();
+  var blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = excelFileName(json);
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+</script>
+
+<script>
+/* ======================= WIRING: PAINEL E EXCEL ======================= */
+
+var painelJsonData = null;
+var excelJsonData = null;
+
+function setupJsonDropzone(prefix, onLoaded) {
+  var dropzone = document.getElementById(prefix + 'Dropzone');
+  var fileInput = document.getElementById(prefix + 'FileInput');
+  var statusEl = document.getElementById(prefix + 'Status');
+  var summaryEl = document.getElementById(prefix + 'Summary');
+
+  function handleFile(file) {
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      var json;
+      try {
+        json = JSON.parse(reader.result);
+      } catch (err) {
+        statusEl.textContent = 'Arquivo não é um JSON válido: ' + err.message;
+        statusEl.className = 'status-line error';
+        summaryEl.style.display = 'none';
+        onLoaded(null);
+        return;
+      }
+      var result = validateAnalysisJson(json);
+      if (!result.valid) {
+        statusEl.textContent = 'JSON inválido: ' + result.errors.join(' | ');
+        statusEl.className = 'status-line error';
+        summaryEl.style.display = 'none';
+        onLoaded(null);
+        return;
+      }
+      statusEl.textContent = 'JSON carregado: ' + file.name;
+      statusEl.className = 'status-line success';
+      summaryEl.style.display = 'block';
+      summaryEl.innerHTML = '<ul><li>' + summarizeAnalysisJson(json).join('</li><li>') + '</li></ul>';
+      onLoaded(json);
+    };
+    reader.onerror = function () {
+      statusEl.textContent = 'Erro ao ler o arquivo.';
+      statusEl.className = 'status-line error';
+      onLoaded(null);
+    };
+    reader.readAsText(file, 'utf-8');
+  }
+
+  dropzone.addEventListener('click', function () { fileInput.click(); });
+  dropzone.addEventListener('dragover', function (e) { e.preventDefault(); dropzone.classList.add('dragover'); });
+  dropzone.addEventListener('dragleave', function () { dropzone.classList.remove('dragover'); });
+  dropzone.addEventListener('drop', function (e) {
+    e.preventDefault();
+    dropzone.classList.remove('dragover');
+    var file = e.dataTransfer.files[0];
+    handleFile(file);
+  });
+  fileInput.addEventListener('change', function (e) {
+    handleFile(e.target.files[0]);
+    fileInput.value = '';
+  });
+}
+
+setupJsonDropzone('painel', function (json) {
+  painelJsonData = json;
+  document.getElementById('painelGenerateBtn').disabled = !json;
+  document.getElementById('painelPreviewBtn').disabled = !json;
+});
+
+setupJsonDropzone('excel', function (json) {
+  excelJsonData = json;
+  document.getElementById('excelGenerateBtn').disabled = !json;
+});
+
+function painelFileBaseName() {
+  var proj = (painelJsonData.project && painelJsonData.project.projectId) || 'Analise';
+  var d = new Date();
+  var pad = function (n) { return String(n).padStart(2, '0'); };
+  var stamp = d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate());
+  return ('Painel_PreAnalise_' + proj + '_' + stamp).replace(/[^a-zA-Z0-9_-]/g, '_') + '.html';
+}
+
+document.getElementById('painelGenerateBtn').addEventListener('click', function () {
+  if (!painelJsonData) return;
+  var html = buildPanelHtml(painelJsonData);
+  var blob = new Blob([html], { type: 'text/html' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = painelFileBaseName();
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById('painelPreviewBtn').addEventListener('click', function () {
+  if (!painelJsonData) return;
+  var html = buildPanelHtml(painelJsonData);
+  var blob = new Blob([html], { type: 'text/html' });
+  var url = URL.createObjectURL(blob);
+  window.open(url, '_blank');
+});
+
+document.getElementById('excelGenerateBtn').addEventListener('click', function () {
+  if (!excelJsonData) return;
+  var btn = document.getElementById('excelGenerateBtn');
+  btn.disabled = true;
+  var originalText = btn.textContent;
+  btn.textContent = 'Gerando...';
+  generateExcelFile(excelJsonData).then(function () {
+    btn.textContent = originalText;
+    btn.disabled = false;
+  }).catch(function (err) {
+    console.error(err);
+    var st = document.getElementById('excelStatus');
+    st.textContent = 'Erro ao gerar Excel: ' + err.message;
+    st.className = 'status-line error';
+    btn.textContent = originalText;
+    btn.disabled = false;
+  });
+});
+
+</script>
+
+</body>
+</html>
