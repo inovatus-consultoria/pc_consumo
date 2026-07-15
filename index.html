@@ -367,221 +367,295 @@ function safeText(v) {
 var PANEL_HTML_HEAD = `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
   <title>__TITLE__</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #F4F6F5; --surface: #FFFFFF; --surface2: #EAF0EE;
-      --ink: #1A2420; --ink2: #4A6058; --ink3: #8AA09A;
-      --accent: #2D5C4E; --accent2: #3A8C7A;
-      --gold: #B8963C; --amber-light: #FBF5E8;
-      --red: #C83A3A; --red-light: #FBF0EF;
-      --gray-light: #F0F2F1; --border: #D0DDD8;
-      --shadow: 0 8px 24px rgba(26,36,32,.06);
+      --bg: #F4F6F5;
+      --surface: #FFFFFF;
+      --surface2: #EAF0EE;
+      --ink: #1A2420;
+      --ink2: #4A6058;
+      --ink3: #8AA09A;
+      --accent: #2D5C4E;
+      --accent-dark: #1E4035;
+      --accent2: #3A8C7A;
+      --green-light: #E8F2EF;
+      --gold: #B8963C;
+      --amber-light: #FBF5E8;
+      --red: #C83A3A;
+      --red-light: #FBF0EF;
+      --gray-light: #EEF1F0;
+      --border: #D0DDD8;
+      --radius: 12px;
+      --shadow: 0 2px 16px rgba(26,36,32,0.08);
     }
     * { box-sizing: border-box; }
-    html, body { margin:0; padding:0; background:var(--bg); color:var(--ink); font-family:"DM Sans", Arial, sans-serif; }
-    body { line-height:1.45; }
-    .page { max-width: 1500px; margin: 0 auto; padding: 24px; }
-    .header { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 22px 24px; box-shadow: var(--shadow); margin-bottom: 18px; }
-    .brand { color: var(--accent); font-weight: 800; letter-spacing: .02em; font-size: 15px; text-transform: uppercase; }
-    .titleRow { display:flex; justify-content:space-between; gap:24px; align-items:flex-start; flex-wrap:wrap; margin-top: 8px; }
-    h1 { margin: 0; font-family: "DM Serif Display", Georgia, serif; font-weight: 400; font-size: 36px; line-height: 1.05; color: var(--ink); }
-    .meta { display:grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap:12px; margin-top:18px; }
-    .metaCard { background: var(--surface2); border-radius: 12px; padding: 12px 14px; border:1px solid var(--border); }
-    .metaCard .k { font-size: 12px; color: var(--ink2); text-transform: uppercase; letter-spacing:.04em; }
-    .metaCard .v { margin-top: 4px; font-size: 15px; color: var(--ink); font-weight: 700; }
-    .scopeNote, .disclaimer { margin-top:12px; color: var(--ink2); font-size: 14px; }
-    .disclaimer { color: var(--ink3); }
-    .tabs { display:flex; gap:8px; margin: 18px 0 14px; }
-    .tabBtn { border:none; cursor:pointer; background:var(--surface); color:var(--ink2); border:1px solid var(--border); border-radius: 999px; padding: 10px 16px; font-weight:700; box-shadow: var(--shadow); }
-    .tabBtn.active { background: var(--accent); color:#fff; border-color: var(--accent); }
-    .filters { background: var(--surface); border:1px solid var(--border); border-radius: 18px; box-shadow: var(--shadow); padding: 14px; display:grid; grid-template-columns: 2fr 1fr 1.2fr 1.4fr auto auto auto; gap:10px; margin-bottom: 16px; align-items:end; }
-    .field label { display:block; font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink2); margin-bottom:6px; }
-    .field input, .field select { width:100%; border:1px solid var(--border); background: #fff; color: var(--ink); border-radius: 10px; padding: 10px 12px; font: inherit; }
-    .checkWrap { display:flex; align-items:center; gap:8px; border:1px solid var(--border); border-radius: 12px; padding: 10px 12px; background:#fff; min-height: 42px; }
-    .checkWrap input { margin:0; }
-    .smallBtn { border:none; cursor:pointer; background:var(--surface2); color:var(--accent); border:1px solid var(--border); border-radius: 12px; padding: 10px 12px; font-weight:700; }
-    .tabContent { display:none; }
-    .tabContent.active { display:block; }
-    .stats { display:grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap:12px; margin-bottom: 14px; }
-    .stat { background: var(--surface); border:1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); padding: 14px 16px; cursor:pointer; }
-    .stat .n { font-family: "DM Serif Display", Georgia, serif; font-size: 36px; line-height: 1; margin: 0 0 8px 0; color: var(--accent); }
-    .stat .l { font-size: 13px; color: var(--ink2); text-transform: uppercase; letter-spacing:.04em; }
-    .stat.active { outline: 2px solid var(--accent2); }
-    .panelGrid { display:grid; grid-template-columns: 1.05fr .95fr; gap: 16px; }
-    .panel { background: var(--surface); border:1px solid var(--border); border-radius: 18px; box-shadow: var(--shadow); padding: 16px; }
-    .panel h2 { margin: 0 0 12px 0; font-family: "DM Serif Display", Georgia, serif; font-weight: 400; font-size: 26px; }
-    .legendList, .signalList { margin:0; padding-left: 20px; color: var(--ink2); }
-    .legendList li, .signalList li { margin-bottom: 10px; }
-    .exceptionsTableWrap, .tableWrap { overflow:auto; border:1px solid var(--border); border-radius: 14px; background: #fff; }
-    table { width:100%; border-collapse: separate; border-spacing:0; }
-    th, td { padding: 10px 12px; border-bottom:1px solid #E6ECE9; vertical-align: top; font-size: 14px; }
-    th { position: sticky; top:0; z-index: 5; background: var(--surface2); color: var(--ink); text-align:left; font-weight:700; }
-    .refTable th:first-child, .refTable td:first-child { position: sticky; left:0; z-index: 4; background: #fff; }
-    .refTable th:first-child { z-index: 6; background: var(--surface2); }
-    .rowLink { cursor:pointer; }
-    .rowLink:hover td { background:#F9FBFA; }
-    .badge { display:inline-flex; align-items:center; gap:8px; border-radius:999px; padding:6px 10px; font-size:12px; font-weight:700; white-space:nowrap; border:1px solid transparent; }
-    .badge:before { content:""; display:inline-block; width:8px; height:8px; border-radius:50%; background: currentColor; }
-    .badge-conforme { color:#2F7D57; background:#F3FAF6; border-color:#D8EBDD; }
-    .badge-atencao { color:#9A6B00; background:var(--amber-light); border-color:#ECDDB0; }
-    .badge-inconsistencia { color:var(--red); background:var(--red-light); border-color:#E8CACA; }
-    .badge-naoVerificavel { color:#626C68; background:var(--gray-light); border-color:#D9DEDC; }
-    .cell { cursor:pointer; border-left: 4px solid transparent; min-width: 140px; max-width: 260px; transition: background .15s ease, border-left-color .15s ease; }
-    .cell:hover { background:#F8FBF9; }
-    .cell.truncate > .text { display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient: vertical; overflow:hidden; }
-    .state-attention { background: var(--amber-light); border-left-color: var(--gold); }
-    .state-inconsistency { background: var(--red-light); border-left-color: var(--red); }
-    .state-notverifiable { background: var(--gray-light); border-left-color: #8A9390; }
-    .selectedRow td { background:#F9FBFA; }
-    .selectedCell { outline: 2px solid var(--accent2); outline-offset: -2px; }
-    .subtle { color: var(--ink3); font-size: 12px; }
-    .empty { color: var(--ink3); font-style: italic; }
-    .drawerBackdrop { position: fixed; inset: 0; background: rgba(20,30,26,.28); display:none; z-index: 60; }
-    .drawer { position: fixed; right:0; top:0; height:100vh; width:min(520px, 96vw); background: var(--surface); border-left:1px solid var(--border); box-shadow: -10px 0 32px rgba(0,0,0,.1); transform: translateX(100%); transition: transform .22s ease; z-index: 70; display:flex; flex-direction:column; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'DM Sans', Arial, sans-serif; font-size: 14px; }
+    button, input, select { font: inherit; }
+    ::-webkit-scrollbar { width: 7px; height: 7px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+
+    .app-header { position: sticky; top: 0; z-index: 50; background: rgba(244,246,245,.97); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .header-inner { max-width: 1800px; margin: 0 auto; padding: 16px 28px 0; }
+    .brand-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .brand-mark { width: 40px; height: 40px; border-radius: 11px; background: var(--ink); color: white; display: grid; place-items: center; font-family: 'DM Serif Display', Georgia, serif; font-size: 22px; flex-shrink: 0; }
+    h1 { margin: 0 0 3px; font-family: 'DM Serif Display', Georgia, serif; font-size: 29px; font-weight: 400; line-height: 1.1; }
+    .subtitle { color: var(--ink3); font-size: 12px; }
+    .project-meta { display: flex; flex-wrap: wrap; gap: 6px 10px; margin-top: 8px; }
+    .project-chip { display: inline-flex; align-items: center; gap: 5px; background: var(--surface2); border: 1px solid var(--border); border-radius: 99px; padding: 4px 10px; font-size: 10.5px; color: var(--ink2); }
+    .project-chip strong { color: var(--ink); font-weight: 700; }
+    .scope-note { max-width: 520px; color: var(--ink2); font-size: 11px; line-height: 1.5; text-align: right; }
+    .scope-note .disclaimer { display: block; margin-top: 6px; color: var(--ink3); }
+
+    .tabs { display: flex; gap: 5px; margin-top: 14px; }
+    .tab { border: 0; background: transparent; color: var(--ink2); padding: 11px 15px 12px; border-bottom: 3px solid transparent; cursor: pointer; font-size: 12px; font-weight: 600; transition: all .15s; }
+    .tab:hover { color: var(--accent); }
+    .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    .main { max-width: 1800px; margin: 0 auto; padding: 24px 28px 52px; }
+    .view { display: none; }
+    .view.active { display: block; }
+
+    .kpi-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 13px; margin-bottom: 15px; }
+    .kpi { position: relative; overflow: hidden; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 15px 17px; cursor: pointer; transition: all .15s; min-height: 102px; }
+    .kpi:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
+    .kpi::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 3px; background: var(--border); }
+    .kpi[data-result="Conforme"]::before { background: var(--accent2); }
+    .kpi[data-result="Atenção"]::before { background: var(--gold); }
+    .kpi[data-result="Inconsistência"]::before { background: var(--red); }
+    .kpi[data-result="Não verificável"]::before { background: var(--ink3); }
+    .kpi.active { box-shadow: inset 0 0 0 2px var(--accent2); }
+    .kpi-label { color: var(--ink3); font-size: 9.5px; font-weight: 700; letter-spacing: .075em; text-transform: uppercase; }
+    .kpi-number { font-family: 'DM Serif Display', Georgia, serif; font-size: 31px; line-height: 1; margin: 8px 0 6px; }
+    .kpi-caption { color: var(--ink2); font-size: 10.5px; }
+
+    .legend { display: flex; align-items: center; gap: 10px 20px; flex-wrap: wrap; padding: 12px 15px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 16px; }
+    .legend-title { color: var(--ink3); font-size: 9.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
+    .legend-item { display: flex; align-items: center; gap: 7px; color: var(--ink2); font-size: 10.5px; }
+
+    .badge { display: inline-flex; align-items: center; padding: 3px 8px; border-radius: 99px; font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .045em; white-space: nowrap; }
+    .badge-green { background: var(--green-light); color: var(--accent); }
+    .badge-amber { background: var(--amber-light); color: var(--gold); }
+    .badge-red { background: var(--red-light); color: var(--red); }
+    .badge-gray { background: var(--surface2); color: var(--ink2); }
+
+    .filters { display: grid; grid-template-columns: minmax(220px, 1.5fr) repeat(3, minmax(160px, .7fr)) auto; gap: 9px; padding: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: 0 2px 10px rgba(26,36,32,.035); margin-bottom: 10px; }
+    input, select { width: 100%; height: 38px; padding: 8px 11px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--ink); outline: none; font-size: 11.5px; transition: all .15s; }
+    input:focus, select:focus { border-color: var(--accent); background: white; }
+    .btn { border: 1px solid var(--border); background: transparent; color: var(--ink2); border-radius: 8px; padding: 8px 12px; cursor: pointer; font-size: 11px; font-weight: 600; transition: all .15s; }
+    .btn:hover { background: var(--surface2); color: var(--ink); }
+
+    .quick-filters { display: flex; gap: 7px; flex-wrap: wrap; margin: 0 0 15px; }
+    .chip { border: 1px solid var(--border); background: var(--surface); color: var(--ink2); border-radius: 99px; padding: 6px 10px; cursor: pointer; font-size: 10.5px; transition: all .15s; }
+    .chip:hover { background: var(--surface2); }
+    .chip.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+    .section-header { display: flex; justify-content: space-between; align-items: flex-end; gap: 18px; margin: 21px 0 10px; }
+    .section-header h2 { margin: 0; font-family: 'DM Serif Display', Georgia, serif; font-size: 22px; font-weight: 400; }
+    .section-header p { margin: 4px 0 0; color: var(--ink3); font-size: 11px; }
+    .counter { color: var(--ink3); font-size: 10.5px; }
+
+    .summary-list { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .summary-head, .summary-row { display: grid; grid-template-columns: 70px minmax(200px,.9fr) 110px 150px minmax(300px,1.5fr); gap: 12px; align-items: center; }
+    .summary-head { padding: 9px 15px; background: var(--bg); border-bottom: 1px solid var(--border); color: var(--ink3); font-size: 9px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+    .summary-row { padding: 12px 15px; border-bottom: 1px solid var(--surface2); cursor: pointer; transition: background .15s; font-size: 11.5px; }
+    .summary-row:last-child { border-bottom: 0; }
+    .summary-row:hover { background: #F8FAF9; }
+    .summary-item { font-weight: 700; }
+    .summary-supplier { font-weight: 600; }
+    .summary-value { color: var(--accent); font-family: 'DM Serif Display', Georgia, serif; font-size: 15px; }
+    .summary-observation { color: var(--ink2); line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+    .signals { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; margin-top: 16px; }
+    .signal { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 15px; }
+    .signal h3 { margin: 0 0 6px; font-size: 11.5px; }
+    .signal p { margin: 0; color: var(--ink2); font-size: 10.8px; line-height: 1.5; }
+
+    .ref-toolbar { position: sticky; top: 112px; z-index: 30; padding-top: 5px; background: linear-gradient(var(--bg) 80%, rgba(244,246,245,0)); }
+    .table-help { display: flex; justify-content: space-between; align-items: center; gap: 15px; padding: 9px 12px; margin-bottom: 8px; border: 1px solid var(--border); border-radius: 9px; background: var(--surface); color: var(--ink2); font-size: 10.5px; }
+    .table-help strong { color: var(--ink); }
+
+    .table-shell { position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: auto; max-height: calc(100vh - 270px); box-shadow: 0 2px 12px rgba(26,36,32,.035); }
+    table { width: max-content; min-width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; }
+    thead th { position: sticky; top: 0; z-index: 10; background: #EDF2F0; color: var(--ink2); border-bottom: 1px solid var(--border); border-right: 1px solid #DDE6E2; padding: 10px 9px; font-size: 9px; font-weight: 700; letter-spacing: .055em; text-transform: uppercase; text-align: left; vertical-align: bottom; line-height: 1.3; }
+    thead th:last-child { border-right: 0; }
+    tbody td { position: relative; border-bottom: 1px solid #E5EBE8; border-right: 1px solid #E5EBE8; padding: 9px; vertical-align: top; background: white; font-size: 10.8px; line-height: 1.42; transition: box-shadow .12s, background .12s; }
+    tbody tr:last-child td { border-bottom: 0; }
+    tbody td:last-child { border-right: 0; }
+    tbody tr:hover td { box-shadow: inset 0 1px 0 #D4E1DC, inset 0 -1px 0 #D4E1DC; }
+    tbody tr.row-selected td { box-shadow: inset 0 2px 0 var(--accent2), inset 0 -2px 0 var(--accent2); }
+
+    .sticky-item { position: sticky; left: 0; z-index: 8; background: #F9FBFA !important; width: 68px; min-width: 68px; max-width: 68px; text-align: center; font-weight: 700; color: var(--accent); }
+    thead .sticky-item { z-index: 14; background: #E4ECE9 !important; }
+    .col-w-narrow { width: 110px; min-width: 110px; }
+    .col-w-medium { width: 190px; min-width: 190px; }
+    .col-w-wide { width: 300px; min-width: 300px; }
+    .col-w-value { width: 125px; min-width: 125px; text-align: right; }
+    .col-w-status { width: 135px; min-width: 135px; }
+    .col-w-observation { width: 340px; min-width: 340px; }
+
+    .cell-clickable { cursor: pointer; }
+    .cell-clickable:hover { box-shadow: inset 0 0 0 2px rgba(45,92,78,.28); }
+    .cell-text { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; white-space: pre-line; }
+    .cell-short { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .empty-cell { color: var(--ink3); font-style: italic; }
+
+    .state-attention { background: linear-gradient(90deg, var(--gold) 0 3px, #FFFBF2 3px 100%) !important; }
+    .state-inconsistency { background: linear-gradient(90deg, var(--red) 0 3px, #FFF7F6 3px 100%) !important; }
+    .state-notverifiable { background: linear-gradient(90deg, var(--ink3) 0 3px, #F5F7F6 3px 100%) !important; }
+    .cell-selected { box-shadow: inset 0 0 0 2px var(--accent) !important; z-index: 3; }
+
+    .empty { padding: 38px 18px; text-align: center; color: var(--ink3); background: var(--surface); border: 1px dashed var(--border); border-radius: var(--radius); }
+
+    .drawer-overlay { position: fixed; inset: 0; z-index: 80; background: rgba(26,36,32,.34); opacity: 0; visibility: hidden; transition: all .18s; }
+    .drawer-overlay.open { opacity: 1; visibility: visible; }
+    .drawer { position: fixed; inset: 0 0 0 auto; z-index: 90; width: min(560px, 94vw); background: var(--bg); box-shadow: -22px 0 60px rgba(26,36,32,.18); transform: translateX(100%); transition: transform .22s ease; display: flex; flex-direction: column; }
     .drawer.open { transform: translateX(0); }
-    .drawerBackdrop.open { display:block; }
-    .drawerHead { padding: 18px 18px 14px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; gap:16px; align-items:flex-start; }
-    .drawerTitle h3 { margin:0; font-family:"DM Serif Display", Georgia, serif; font-weight:400; font-size:28px; }
-    .drawerTitle p { margin:6px 0 0; color:var(--ink2); font-size:14px; }
-    .closeBtn { border:none; background: var(--surface2); color: var(--ink); border-radius: 999px; width: 36px; height: 36px; cursor:pointer; font-size:20px; }
-    .drawerBody { padding: 18px; overflow:auto; }
-    .detailBlock { border:1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 12px; background:#fff; }
-    .detailBlock .k { font-size:12px; text-transform: uppercase; letter-spacing:.04em; color:var(--ink2); margin-bottom: 6px; }
-    .detailBlock .v { color:var(--ink); white-space: pre-wrap; word-break: break-word; }
-    .contextGrid { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:10px; margin-bottom: 12px; }
-    .contextCard { background: var(--surface2); border:1px solid var(--border); border-radius: 12px; padding: 10px 12px; }
-    .footerNote { color: var(--ink3); font-size: 12px; margin-top: 8px; }
-    @media (max-width: 1180px) {
+    .drawer-header { flex: 0 0 auto; display: flex; justify-content: space-between; gap: 18px; padding: 18px 20px; background: var(--surface); border-bottom: 1px solid var(--border); }
+    .drawer-kicker { color: var(--ink3); font-size: 9.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
+    .drawer-title { font-family: 'DM Serif Display', Georgia, serif; font-size: 24px; margin: 5px 0 3px; }
+    .drawer-subtitle { color: var(--ink3); font-size: 11px; line-height: 1.45; }
+    .close-btn { width: 34px; height: 34px; border: 1px solid var(--border); background: transparent; border-radius: 8px; cursor: pointer; color: var(--ink2); font-size: 21px; line-height: 1; }
+    .close-btn:hover { background: var(--surface2); }
+    .drawer-content { overflow: auto; padding: 15px 17px 28px; }
+    .source-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 15px 16px; margin-bottom: 10px; }
+    .source-card h3 { margin: 0 0 10px; color: var(--ink3); font-size: 9.5px; font-weight: 700; letter-spacing: .065em; text-transform: uppercase; }
+    .source-block { padding: 10px 11px; border-radius: 9px; border: 1px solid var(--border); background: var(--bg); margin-bottom: 8px; }
+    .source-block:last-child { margin-bottom: 0; }
+    .source-label { color: var(--ink3); font-size: 9px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 4px; }
+    .source-value { color: var(--ink2); font-size: 11.5px; line-height: 1.55; white-space: pre-line; overflow-wrap: anywhere; }
+    .source-ref { color: var(--ink3); font-size: 9.8px; margin-top: 5px; line-height: 1.45; }
+    .assessment { border-left: 3px solid var(--border); padding-left: 11px; color: var(--ink2); font-size: 11.5px; line-height: 1.58; }
+    .assessment.attention { border-left-color: var(--gold); }
+    .assessment.inconsistency { border-left-color: var(--red); }
+    .assessment.notverifiable { border-left-color: var(--ink3); }
+    .assessment.conforme { border-left-color: var(--accent2); }
+    .fiscal-list { display: grid; gap: 7px; }
+    .fiscal-item { border: 1px solid var(--border); border-radius: 8px; padding: 9px 10px; background: var(--bg); }
+    .fiscal-item-title { color: var(--ink2); font-size: 10.8px; line-height: 1.45; }
+    .fiscal-item-meta { color: var(--ink3); font-size: 9.5px; margin-top: 4px; }
+
+    @media (max-width: 1050px) {
+      .kpi-grid { grid-template-columns: repeat(3,1fr); }
       .filters { grid-template-columns: 1fr 1fr; }
-      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .panelGrid { grid-template-columns: 1fr; }
+      .filters input { grid-column: 1 / -1; }
+      .signals { grid-template-columns: 1fr; }
+      .summary-head, .summary-row { grid-template-columns: 58px minmax(150px,.8fr) 100px minmax(260px,1.4fr); }
+      .summary-head > :nth-child(3), .summary-row > :nth-child(3) { display: none; }
     }
-    @media (max-width: 760px) {
-      .page { padding: 12px; }
-      h1 { font-size: 30px; }
-      .stats { grid-template-columns: 1fr 1fr; }
+    @media (max-width: 720px) {
+      .header-inner, .main { padding-left: 15px; padding-right: 15px; }
+      .brand-row { display: block; }
+      .scope-note { text-align: left; margin-top: 10px; max-width: none; }
+      .kpi-grid { grid-template-columns: 1fr 1fr; }
+      .kpi:first-child { grid-column: 1 / -1; }
+      .filters { grid-template-columns: 1fr; }
+      .filters input { grid-column: auto; }
+      .summary-head { display: none; }
+      .summary-row { grid-template-columns: 48px 1fr auto; gap: 8px; }
+      .summary-row > :nth-child(4), .summary-row > :nth-child(5) { grid-column: 2 / -1; }
+      .ref-toolbar { top: 136px; }
     }
   </style>
 </head>
 <body>
-  <div class="page">
-    <div class="header">
-      <div class="brand">Inovatus</div>
-      <div class="titleRow">
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand-row">
+        <div class="brand">
+          <div class="brand-mark">I</div>
+          <div>
+            <h1>Pré-análise documental</h1>
+            <div class="subtitle" id="headerSubtitle"></div>
+            <div class="project-meta" id="projectMeta"></div>
+          </div>
+        </div>
+        <div class="scope-note">
+          Esta interface reproduz os dados recebidos no REF ou Prompt. Informações fiscais e bancárias aparecem somente como fonte de comparação ao selecionar uma célula.
+          <span class="disclaimer">A pré-análise não aprova nem rejeita despesas e não substitui a avaliação do analista.</span>
+        </div>
+      </div>
+      <nav class="tabs">
+        <button class="tab active" data-tab="overview">Visão geral</button>
+        <button class="tab" data-tab="ref">Visão REF</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="view active" id="view-overview">
+      <div class="kpi-grid" id="kpiGrid"></div>
+      <div class="legend" id="legend"></div>
+      <div id="overviewFilters"></div>
+
+      <div class="section-header">
         <div>
-          <h1>Pré-análise documental</h1>
-          <div class="scopeNote">Esta interface reproduz os dados recebidos no REF ou Prompt. Informações fiscais e bancárias aparecem somente como fonte de comparação ao selecionar uma célula.</div>
-          <div class="disclaimer">A pré-análise não aprova nem rejeita despesas e não substitui a avaliação do analista.</div>
+          <h2>Exceções e itens para revisão</h2>
+          <p>Clique em uma linha para abrir o Item correspondente na Visão REF.</p>
         </div>
+        <div class="counter" id="overviewCounter"></div>
       </div>
-      <div class="meta" id="metaCards"></div>
-      <div class="footerNote" id="metaFooter"></div>
-    </div>
 
-    <div class="tabs" role="tablist" aria-label="Abas do painel">
-      <button class="tabBtn active" data-tab="geral" aria-label="Abrir aba Visão geral">Visão geral</button>
-      <button class="tabBtn" data-tab="ref" aria-label="Abrir aba Visão REF">Visão REF</button>
-    </div>
-
-    <div class="filters">
-      <div class="field">
-        <label for="searchInput">Busca livre</label>
-        <input id="searchInput" type="text" placeholder="Buscar por item, fornecedor, observação ou valor..." />
-      </div>
-      <div class="field">
-        <label for="resultFilter">Resultado geral</label>
-        <select id="resultFilter">
-          <option value="">Todos</option>
-          <option value="Conforme">Conforme</option>
-          <option value="Atenção">Atenção</option>
-          <option value="Inconsistência">Inconsistência</option>
-          <option value="Não verificável">Não verificável</option>
-        </select>
-      </div>
-      <div class="field">
-        <label for="budgetFilter">Item de orçamento</label>
-        <select id="budgetFilter"><option value="">Todos</option></select>
-      </div>
-      <div class="field">
-        <label for="supplierFilter">Fornecedor</label>
-        <select id="supplierFilter"><option value="">Todos</option></select>
-      </div>
-      <label class="checkWrap" aria-label="Mostrar somente exceções">
-        <input id="exceptionsOnly" type="checkbox" checked />
-        <span>Somente exceções</span>
-      </label>
-      <label class="checkWrap" aria-label="Filtrar possível equipamento ou material permanente">
-        <input id="equipmentOnly" type="checkbox" />
-        <span>Possível equipamento</span>
-      </label>
-      <button id="clearFilters" class="smallBtn" aria-label="Limpar filtros">Limpar filtros</button>
-    </div>
-
-    <section id="tab-geral" class="tabContent active">
-      <div class="stats" id="stats"></div>
-      <div class="panelGrid">
-        <div class="panel">
-          <h2>Lista de exceções</h2>
-          <div class="exceptionsTableWrap">
-            <table id="exceptionsTable">
-              <thead>
-                <tr>
-                  <th>Item</th>
-                  <th>Fornecedor</th>
-                  <th>Valor</th>
-                  <th>Resultado</th>
-                  <th>Observação consolidada</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </div>
-          <div class="footerNote">Clique em uma linha para abrir a Visão REF posicionada no item correspondente.</div>
+      <div class="summary-list">
+        <div class="summary-head">
+          <div>Item</div>
+          <div>Fornecedor</div>
+          <div>Valor</div>
+          <div>Resultado</div>
+          <div>Observação</div>
         </div>
+        <div id="overviewList"></div>
+      </div>
+
+      <div class="section-header">
         <div>
-          <div class="panel" style="margin-bottom:16px;">
-            <h2>Legenda</h2>
-            <ul class="legendList">
-              <li><strong>Conforme</strong> — documentos essenciais associados com segurança e sem divergência relevante.</li>
-              <li><strong>Atenção</strong> — dúvida, ambiguidade ou questão de enquadramento que exige avaliação humana.</li>
-              <li><strong>Inconsistência</strong> — incompatibilidade objetiva e demonstrável em informação essencial.</li>
-              <li><strong>Não verificável</strong> — ausência, ilegibilidade ou falta de associação de evidência essencial impede avaliar o núcleo.</li>
-            </ul>
-          </div>
-          <div class="panel">
-            <h2>Sinalizações gerais</h2>
-            <ul class="signalList" id="signalList"></ul>
-          </div>
+          <h2>Limitações e sinalizações gerais</h2>
+          <p>Informações que não alteram automaticamente o Resultado geral.</p>
         </div>
       </div>
+      <div class="signals" id="signals"></div>
     </section>
 
-    <section id="tab-ref" class="tabContent">
-      <div class="tableWrap">
-        <table class="refTable" id="refTable">
-          <thead><tr id="refTableHeadRow"></tr></thead>
-          <tbody></tbody>
+    <section class="view" id="view-ref">
+      <div class="ref-toolbar">
+        <div id="refFilters"></div>
+        <div class="table-help">
+          <div><strong>Clique em qualquer célula</strong> para ver o valor no REF, na NF e no comprovante, com a fonte usada em cada um.</div>
+          <div id="refCounter"></div>
+        </div>
+      </div>
+
+      <div class="table-shell" id="tableShell">
+        <table aria-label="Visão REF">
+          <thead><tr id="refHeadRow"></tr></thead>
+          <tbody id="refBody"></tbody>
         </table>
       </div>
     </section>
-  </div>
+  </main>
 
-  <div class="drawerBackdrop" id="drawerBackdrop"></div>
-  <aside class="drawer" id="drawer" aria-label="Fonte da comparação">
-    <div class="drawerHead">
-      <div class="drawerTitle">
-        <h3>Fonte da comparação</h3>
-        <p id="drawerSubtitle">Selecione uma célula para ver o detalhe.</p>
+  <div class="drawer-overlay" id="drawerOverlay"></div>
+  <aside class="drawer" id="drawer" aria-hidden="true">
+    <div class="drawer-header">
+      <div>
+        <div class="drawer-kicker" id="drawerKicker">Fonte da comparação</div>
+        <div class="drawer-title" id="drawerTitle">Campo</div>
+        <div class="drawer-subtitle" id="drawerSubtitle">Item</div>
       </div>
-      <button class="closeBtn" id="closeDrawer" aria-label="Fechar painel">&times;</button>
+      <button class="close-btn" id="closeDrawer" aria-label="Fechar">×</button>
     </div>
-    <div class="drawerBody" id="drawerBody"></div>
+    <div class="drawer-content" id="drawerContent"></div>
   </aside>
 `;
-
 var PANEL_RUNTIME_JS = [
 'function esc(str) {',
 '  return String(str === undefined || str === null ? "" : str).replace(/[&<>"\']/g, function (m) {',
@@ -615,10 +689,16 @@ var PANEL_RUNTIME_JS = [
 '  return fmtGeneric(v);',
 '}',
 'function badgeClass(status) {',
-'  if (status === "Conforme") return "badge badge-conforme";',
-'  if (status === "Atenção") return "badge badge-atencao";',
-'  if (status === "Inconsistência") return "badge badge-inconsistencia";',
-'  return "badge badge-naoVerificavel";',
+'  if (status === "Conforme") return "badge badge-green";',
+'  if (status === "Atenção") return "badge badge-amber";',
+'  if (status === "Inconsistência") return "badge badge-red";',
+'  return "badge badge-gray";',
+'}',
+'function assessmentClass(status) {',
+'  if (status === "Atenção") return "attention";',
+'  if (status === "Inconsistência") return "inconsistency";',
+'  if (status === "Não verificável") return "notverificavel";',
+'  return "conforme";',
 '}',
 'function stateClass(st) {',
 '  if (st === "attention") return "state-attention";',
@@ -626,12 +706,26 @@ var PANEL_RUNTIME_JS = [
 '  if (st === "notverifiable" || st === "not_verificavel") return "state-notverifiable";',
 '  return "";',
 '}',
-'function truncateText(v) {',
-'  var t = fmtGeneric(v);',
-'  return t && t !== "—" ? "<div class=\\"text\\">" + esc(t) + "</div>" : "<div class=\\"text empty\\">—</div>";',
+'function widthClass(group) {',
+'  if (group === "description" || group === "justification") return "col-w-wide";',
+'  if (group === "date" || group === "classification") return "col-w-narrow";',
+'  if (group === "value") return "col-w-value";',
+'  return "col-w-medium";',
 '}',
 '',
-'var RESULT_ORDER = ["Total", "Conforme", "Atenção", "Inconsistência", "Não verificável"];',
+'var RESULT_ORDER = ["Conforme", "Atenção", "Inconsistência", "Não verificável"];',
+'var RESULT_CAPTION = {',
+'  "Conforme": "Sem divergência relevante",',
+'  "Atenção": "Exige avaliação humana",',
+'  "Inconsistência": "Incompatibilidade objetiva",',
+'  "Não verificável": "Falta evidência essencial"',
+'};',
+'var RESULT_DESC = {',
+'  "Conforme": "Documentos essenciais associados com segurança e sem divergência relevante.",',
+'  "Atenção": "Dúvida, ambiguidade ou questão de enquadramento que exige avaliação humana.",',
+'  "Inconsistência": "Incompatibilidade objetiva e demonstrável em informação essencial.",',
+'  "Não verificável": "Ausência, ilegibilidade ou falta de associação de evidência essencial impede avaliar o núcleo."',
+'};',
 '',
 'function fieldByGroup(item, groupName) {',
 '  var fields = item.fields || {};',
@@ -688,176 +782,254 @@ var PANEL_RUNTIME_JS = [
 'DATA.columns = buildColumns(DATA.items);',
 'DATA.generalSignals = [];',
 '(RAW_DATA.generalSignals || []).forEach(function (s) {',
-'  DATA.generalSignals.push((s.label ? s.label + " — " : "") + (s.description || ""));',
+'  DATA.generalSignals.push({ title: s.label || "Sinalização geral", text: s.description || "" });',
 '});',
 '((RAW_DATA.input && RAW_DATA.input.structuralLimitations) || []).forEach(function (s) {',
-'  DATA.generalSignals.push((s.label ? s.label + " — " : "") + (s.description || ""));',
+'  DATA.generalSignals.push({ title: s.label || "Limitação estrutural", text: s.description || "" });',
 '});',
 '',
-'function docRef(item, type) {',
-'  var docs = DATA.documents.filter(function (d) {',
+'function docsFor(item, type) {',
+'  return DATA.documents.filter(function (d) {',
 '    return d.type === type && Array.isArray(d.relatedItems) && d.relatedItems.indexOf(item.itemRef) !== -1;',
 '  });',
-'  if (!docs.length) return "—";',
+'}',
+'function docRefText(item, type) {',
+'  var docs = docsFor(item, type);',
+'  if (!docs.length) return "";',
 '  return docs.map(function (d) {',
 '    var pages = d.pageStart ? (d.pageStart === d.pageEnd ? ("p. " + d.pageStart) : ("p. " + d.pageStart + "-" + d.pageEnd)) : "";',
 '    return (d.fileName || "") + (pages ? (", " + pages) : "");',
 '  }).join(" / ");',
 '}',
 '',
-'var state = {',
-'  tab: "geral", search: "", result: "", budget: "", supplier: "",',
-'  exceptionsOnly: true, equipmentOnly: false, statFilter: ""',
-'};',
+'var state = { search: "", result: "", budget: "", supplier: "", quick: "exceptions" };',
 '',
-'var els = {',
-'  tabs: Array.prototype.slice.call(document.querySelectorAll(".tabBtn")),',
-'  tabContents: { geral: document.getElementById("tab-geral"), ref: document.getElementById("tab-ref") },',
-'  searchInput: document.getElementById("searchInput"),',
-'  resultFilter: document.getElementById("resultFilter"),',
-'  budgetFilter: document.getElementById("budgetFilter"),',
-'  supplierFilter: document.getElementById("supplierFilter"),',
-'  exceptionsOnly: document.getElementById("exceptionsOnly"),',
-'  equipmentOnly: document.getElementById("equipmentOnly"),',
-'  clearFilters: document.getElementById("clearFilters"),',
-'  stats: document.getElementById("stats"),',
-'  exceptionsBody: document.querySelector("#exceptionsTable tbody"),',
-'  signalList: document.getElementById("signalList"),',
-'  refHeadRow: document.getElementById("refTableHeadRow"),',
-'  refBody: document.querySelector("#refTable tbody"),',
-'  drawer: document.getElementById("drawer"),',
-'  drawerBody: document.getElementById("drawerBody"),',
-'  drawerSubtitle: document.getElementById("drawerSubtitle"),',
-'  drawerBackdrop: document.getElementById("drawerBackdrop"),',
-'  closeDrawer: document.getElementById("closeDrawer"),',
-'  metaCards: document.getElementById("metaCards"),',
-'  metaFooter: document.getElementById("metaFooter")',
-'};',
+'function norm(v) {',
+'  return String(v === undefined || v === null ? "" : v).normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").toLowerCase();',
+'}',
+'',
+'function uniqueValues(fn) {',
+'  var set = {};',
+'  DATA.items.forEach(function (it) { var v = fn(it); if (v && v !== "—") set[v] = true; });',
+'  return Object.keys(set).sort();',
+'}',
+'',
+'function filteredItems() {',
+'  var list = DATA.items.slice();',
+'  var query = norm(state.search);',
+'  if (query) {',
+'    list = list.filter(function (it) {',
+'      var hay = [it.itemRef, budgetOf(it), supplierOf(it), it.observation, valueOf(it), it.result].join(" ");',
+'      return norm(hay).indexOf(query) !== -1;',
+'    });',
+'  }',
+'  if (state.result) list = list.filter(function (it) { return it.result === state.result; });',
+'  if (state.budget) list = list.filter(function (it) { return budgetOf(it) === state.budget; });',
+'  if (state.supplier) list = list.filter(function (it) { return supplierOf(it) === state.supplier; });',
+'  if (state.quick === "exceptions") list = list.filter(function (it) { return it.result !== "Conforme"; });',
+'  if (state.quick === "missing") list = list.filter(function (it) { return it.result === "Não verificável"; });',
+'  if (state.quick === "equipment") list = list.filter(function (it) {',
+'    return !!(it.dimensions && it.dimensions.possibleEquipment && it.dimensions.possibleEquipment.flag);',
+'  });',
+'  list.sort(function (a, b) { return String(a.itemRef).localeCompare(String(b.itemRef), undefined, { numeric: true }); });',
+'  return list;',
+'}',
 '',
 'function renderMeta() {',
 '  var p = RAW_DATA.project || {};',
 '  var input = RAW_DATA.input || {};',
+'  document.getElementById("headerSubtitle").textContent =',
+'    (p.expenseCategory || "Pré-análise") + " · " + DATA.items.length + " itens · Modo " + (input.mode || "—");',
+'  var chips = [];',
+'  if (p.projectId) chips.push(["Projeto", p.projectId]);',
+'  if (p.projectName) chips.push(["Nome", p.projectName]);',
+'  if (RAW_DATA.generatedAt) chips.push(["Gerado em", fmtGeneric(RAW_DATA.generatedAt)]);',
+'  document.getElementById("projectMeta").innerHTML = chips.map(function (c) {',
+'    return "<span class=\\"project-chip\\"><strong>" + esc(c[0]) + ":</strong> " + esc(c[1]) + "</span>";',
+'  }).join("");',
+'}',
+'',
+'function renderKpis() {',
+'  var all = DATA.items;',
 '  var cards = [',
-'    ["Projeto", p.projectName || p.projectId || "—"],',
-'    ["Itens", String(DATA.items.length)],',
-'    ["Modo", input.mode || "—"],',
-'    ["Rubrica", p.expenseCategory || "—"],',
-'    ["Escopo", "Painel HTML somente leitura"]',
+'    { label: "Total analisado", number: all.length, caption: "Itens REF", result: "" }',
 '  ];',
-'  els.metaCards.innerHTML = cards.map(function (c) {',
-'    return "<div class=\\"metaCard\\"><div class=\\"k\\">" + esc(c[0]) + "</div><div class=\\"v\\">" + esc(c[1]) + "</div></div>";',
+'  RESULT_ORDER.forEach(function (r) {',
+'    cards.push({ label: r, number: all.filter(function (it) { return it.result === r; }).length, caption: RESULT_CAPTION[r], result: r });',
+'  });',
+'  document.getElementById("kpiGrid").innerHTML = cards.map(function (c) {',
+'    return "<div class=\\"kpi" + (state.result === c.result && c.result ? " active" : "") + "\\" data-result=\\"" + esc(c.result) + "\\">" +',
+'      "<div class=\\"kpi-label\\">" + esc(c.label) + "</div>" +',
+'      "<div class=\\"kpi-number\\">" + c.number + "</div>" +',
+'      "<div class=\\"kpi-caption\\">" + esc(c.caption) + "</div></div>";',
 '  }).join("");',
-'  els.metaFooter.textContent = RAW_DATA.generatedAt ? ("Gerado em " + fmtGeneric(RAW_DATA.generatedAt)) : "";',
-'}',
-'',
-'function buildFilterOptions() {',
-'  var budgets = {}, suppliers = {};',
-'  DATA.items.forEach(function (it) {',
-'    var b = budgetOf(it), s = supplierOf(it);',
-'    if (b && b !== "—") budgets[b] = true;',
-'    if (s && s !== "—") suppliers[s] = true;',
-'  });',
-'  Object.keys(budgets).sort().forEach(function (v) {',
-'    var opt = document.createElement("option"); opt.value = v; opt.textContent = v; els.budgetFilter.appendChild(opt);',
-'  });',
-'  Object.keys(suppliers).sort().forEach(function (v) {',
-'    var opt = document.createElement("option"); opt.value = v; opt.textContent = v; els.supplierFilter.appendChild(opt);',
-'  });',
-'}',
-'',
-'function getFilteredItems() {',
-'  var term = state.search.trim().toLowerCase();',
-'  var resultFilter = state.statFilter || state.result;',
-'  return DATA.items.filter(function (it) {',
-'    if (resultFilter && it.result !== resultFilter) return false;',
-'    if (state.budget && budgetOf(it) !== state.budget) return false;',
-'    if (state.supplier && supplierOf(it) !== state.supplier) return false;',
-'    if (state.exceptionsOnly && it.result === "Conforme") return false;',
-'    var equip = it.dimensions && it.dimensions.possibleEquipment && it.dimensions.possibleEquipment.flag;',
-'    if (state.equipmentOnly && !equip) return false;',
-'    if (term) {',
-'      var hay = [it.itemRef, budgetOf(it), supplierOf(it), it.observation, valueOf(it), it.result].join(" ").toLowerCase();',
-'      if (hay.indexOf(term) === -1) return false;',
-'    }',
-'    return true;',
-'  });',
-'}',
-'',
-'function renderStats(filtered) {',
-'  var counts = {',
-'    "Total": filtered.length,',
-'    "Conforme": filtered.filter(function (r) { return r.result === "Conforme"; }).length,',
-'    "Atenção": filtered.filter(function (r) { return r.result === "Atenção"; }).length,',
-'    "Inconsistência": filtered.filter(function (r) { return r.result === "Inconsistência"; }).length,',
-'    "Não verificável": filtered.filter(function (r) { return r.result === "Não verificável"; }).length',
-'  };',
-'  els.stats.innerHTML = RESULT_ORDER.map(function (label) {',
-'    return "<button class=\\"stat " + (state.statFilter === label ? "active" : "") + "\\" data-stat=\\"" + esc(label) + "\\" aria-label=\\"Filtrar por " + esc(label) + "\\">" +',
-'      "<div class=\\"n\\">" + counts[label] + "</div><div class=\\"l\\">" + esc(label) + "</div></button>";',
-'  }).join("");',
-'  els.stats.querySelectorAll(".stat").forEach(function (btn) {',
-'    btn.addEventListener("click", function () {',
-'      var label = btn.dataset.stat;',
-'      state.statFilter = (label === "Total") ? "" : (state.statFilter === label ? "" : label);',
-'      renderAll();',
+'  document.querySelectorAll(".kpi").forEach(function (card) {',
+'    card.addEventListener("click", function () {',
+'      state.result = card.dataset.result;',
+'      state.quick = card.dataset.result ? "all" : "exceptions";',
+'      syncFilterInputs();',
+'      renderCurrent();',
 '    });',
 '  });',
 '}',
 '',
-'function renderSignals() {',
-'  els.signalList.innerHTML = DATA.generalSignals.length ?',
-'    DATA.generalSignals.map(function (s) { return "<li>" + esc(s) + "</li>"; }).join("") :',
-'    "<li class=\\"empty\\">Nenhuma sinalização geral registrada.</li>";',
+'function renderLegend() {',
+'  document.getElementById("legend").innerHTML = "<div class=\\"legend-title\\">Legenda</div>" +',
+'    RESULT_ORDER.map(function (r) {',
+'      return "<div class=\\"legend-item\\"><span class=\\"" + badgeClass(r) + "\\">" + esc(r) + "</span><span>" + esc(RESULT_CAPTION[r]) + "</span></div>";',
+'    }).join("");',
 '}',
 '',
-'function renderExceptions(items) {',
-'  els.exceptionsBody.innerHTML = items.map(function (it) {',
-'    return "<tr class=\\"rowLink\\" data-item=\\"" + esc(it.itemRef) + "\\">" +',
-'      "<td>" + esc(it.itemRef) + "</td>" +',
-'      "<td>" + esc(supplierOf(it)) + "</td>" +',
-'      "<td>" + esc(fmtCurrency(valueOf(it))) + "</td>" +',
-'      "<td><span class=\\"" + badgeClass(it.result) + "\\">" + esc(it.result) + "</span></td>" +',
-'      "<td>" + truncateText(it.observation) + "</td>" +',
-'      "</tr>";',
+'function renderSignals() {',
+'  var el = document.getElementById("signals");',
+'  if (!DATA.generalSignals.length) {',
+'    el.innerHTML = "<div class=\\"empty\\">Nenhuma sinalização geral registrada.</div>";',
+'    return;',
+'  }',
+'  el.innerHTML = DATA.generalSignals.map(function (s) {',
+'    return "<article class=\\"signal\\"><h3>" + esc(s.title) + "</h3><p>" + esc(s.text) + "</p></article>";',
 '  }).join("");',
-'  els.exceptionsBody.querySelectorAll("tr[data-item]").forEach(function (tr) {',
-'    tr.addEventListener("click", function () { goToItem(tr.dataset.item); });',
+'}',
+'',
+'function createFilters(containerId, defaultQuick) {',
+'  var container = document.getElementById(containerId);',
+'  var prefix = containerId.replace("Filters", "");',
+'  var resultOptions = RESULT_ORDER.map(function (r) { return "<option value=\\"" + esc(r) + "\\">" + esc(r) + "</option>"; }).join("");',
+'  var budgetOptions = uniqueValues(budgetOf).map(function (v) { return "<option value=\\"" + esc(v) + "\\">" + esc(v) + "</option>"; }).join("");',
+'  var supplierOptions = uniqueValues(supplierOf).map(function (v) { return "<option value=\\"" + esc(v) + "\\">" + esc(v) + "</option>"; }).join("");',
+'',
+'  container.innerHTML =',
+'    "<div class=\\"filters\\">" +',
+'    "<input id=\\"" + prefix + "Search\\" type=\\"search\\" placeholder=\\"Buscar item, fornecedor, observação ou valor\\">" +',
+'    "<select id=\\"" + prefix + "Result\\"><option value=\\"\\">Todos os resultados</option>" + resultOptions + "</select>" +',
+'    "<select id=\\"" + prefix + "Budget\\"><option value=\\"\\">Todos os itens de orçamento</option>" + budgetOptions + "</select>" +',
+'    "<select id=\\"" + prefix + "Supplier\\"><option value=\\"\\">Todos os fornecedores</option>" + supplierOptions + "</select>" +',
+'    "<button class=\\"btn\\" id=\\"" + prefix + "Clear\\">Limpar</button>" +',
+'    "</div>" +',
+'    "<div class=\\"quick-filters\\" id=\\"" + prefix + "Quick\\">" +',
+'    "<button class=\\"chip\\" data-quick=\\"all\\">Todos</button>" +',
+'    "<button class=\\"chip\\" data-quick=\\"exceptions\\">Somente exceções</button>" +',
+'    "<button class=\\"chip\\" data-quick=\\"missing\\">Não verificável</button>" +',
+'    "<button class=\\"chip\\" data-quick=\\"equipment\\">Possível equipamento</button>" +',
+'    "</div>";',
+'',
+'  var search = document.getElementById(prefix + "Search");',
+'  var result = document.getElementById(prefix + "Result");',
+'  var budget = document.getElementById(prefix + "Budget");',
+'  var supplier = document.getElementById(prefix + "Supplier");',
+'',
+'  function sync() {',
+'    state.search = search.value;',
+'    state.result = result.value;',
+'    state.budget = budget.value;',
+'    state.supplier = supplier.value;',
+'    renderCurrent();',
+'  }',
+'  [search, result, budget, supplier].forEach(function (el) { el.addEventListener("input", sync); });',
+'',
+'  document.getElementById(prefix + "Clear").addEventListener("click", function () {',
+'    search.value = ""; result.value = ""; budget.value = ""; supplier.value = "";',
+'    state.search = ""; state.result = ""; state.budget = ""; state.supplier = ""; state.quick = defaultQuick;',
+'    updateQuick(prefix);',
+'    renderCurrent();',
+'  });',
+'',
+'  Array.prototype.forEach.call(document.querySelectorAll("#" + prefix + "Quick .chip"), function (chip) {',
+'    chip.addEventListener("click", function () {',
+'      state.quick = chip.dataset.quick;',
+'      updateQuick(prefix);',
+'      renderCurrent();',
+'    });',
+'  });',
+'',
+'  updateQuick(prefix);',
+'}',
+'',
+'function updateQuick(prefix) {',
+'  Array.prototype.forEach.call(document.querySelectorAll("#" + prefix + "Quick .chip"), function (chip) {',
+'    chip.classList.toggle("active", chip.dataset.quick === state.quick);',
 '  });',
 '}',
 '',
+'function syncFilterInputs() {',
+'  ["overview", "ref"].forEach(function (prefix) {',
+'    var result = document.getElementById(prefix + "Result");',
+'    var search = document.getElementById(prefix + "Search");',
+'    var budget = document.getElementById(prefix + "Budget");',
+'    var supplier = document.getElementById(prefix + "Supplier");',
+'    if (result) result.value = state.result;',
+'    if (search) search.value = state.search;',
+'    if (budget) budget.value = state.budget;',
+'    if (supplier) supplier.value = state.supplier;',
+'    updateQuick(prefix);',
+'  });',
+'}',
+'',
+'function renderOverview() {',
+'  var list = filteredItems();',
+'  document.getElementById("overviewCounter").textContent = list.length + " item(ns) exibido(s)";',
+'  document.getElementById("overviewList").innerHTML = list.length ? list.map(function (it) {',
+'    return "<div class=\\"summary-row\\" data-item=\\"" + esc(it.itemRef) + "\\">" +',
+'      "<div class=\\"summary-item\\">Item " + esc(it.itemRef) + "</div>" +',
+'      "<div><div class=\\"summary-supplier\\">" + esc(supplierOf(it)) + "</div>" +',
+'      "<div style=\\"color:var(--ink3);font-size:10px;margin-top:2px\\">" + esc(budgetOf(it)) + "</div></div>" +',
+'      "<div class=\\"summary-value\\">" + esc(fmtCurrency(valueOf(it))) + "</div>" +',
+'      "<div>" + badgeHtml(it.result) + "</div>" +',
+'      "<div class=\\"summary-observation\\">" + esc(dash(it.observation)) + "</div></div>";',
+'  }).join("") : "<div class=\\"empty\\">Nenhum item encontrado com os filtros selecionados.</div>";',
+'',
+'  Array.prototype.forEach.call(document.querySelectorAll(".summary-row"), function (row) {',
+'    row.addEventListener("click", function () { openRefAtItem(row.dataset.item); });',
+'  });',
+'}',
+'',
+'function badgeHtml(result) {',
+'  return "<span class=\\"" + badgeClass(result) + "\\">" + esc(result) + "</span>";',
+'}',
+'',
 'function renderRefHead() {',
-'  var cells = ["Item"].concat(DATA.columns.map(function (c) { return c.label; })).concat(["Status geral", "Observações de análise", "Comparações suplementares"]);',
-'  els.refHeadRow.innerHTML = cells.map(function (c) { return "<th>" + esc(c) + "</th>"; }).join("");',
+'  var cells = ["<th class=\\"sticky-item\\">Item</th>"];',
+'  DATA.columns.forEach(function (c) {',
+'    cells.push("<th class=\\"" + widthClass(c.group) + "\\">" + esc(c.label) + "</th>");',
+'  });',
+'  cells.push("<th class=\\"col-w-status\\">Status geral</th>");',
+'  cells.push("<th class=\\"col-w-observation\\">Observações de análise</th>");',
+'  cells.push("<th class=\\"" + widthClass("") + "\\">Comparações suplementares</th>");',
+'  document.getElementById("refHeadRow").innerHTML = cells.join("");',
+'}',
+'',
+'function supplementaryText(item) {',
+'  var parts = (item.supplementaryComparisons || []).map(function (s) { return typeof s === "string" ? s : (s.label || s.description || ""); }).filter(Boolean);',
+'  var dims = item.dimensions || {};',
+'  if (dims.possibleEquipment && dims.possibleEquipment.flag) parts.push("Possível equipamento ou material permanente.");',
+'  if (dims.importation && dims.importation.isImported) parts.push("Item importado — verificar documentação de importação.");',
+'  return parts.join(" ") || "—";',
 '}',
 '',
 'function makeFieldCell(item, col) {',
 '  var field = (item.fields || {})[col.key];',
 '  var cls = field ? stateClass(field.state) : "";',
 '  var text = field ? fmtByGroup(field, field.refValue) : "—";',
-'  return "<td class=\\"cell truncate " + cls + "\\" data-item=\\"" + esc(item.itemRef) + "\\" data-field=\\"" + esc(col.key) + "\\" tabindex=\\"0\\">" +',
-'    (text && text !== "—" ? "<div class=\\"text\\">" + esc(text) + "</div>" : "<div class=\\"text empty\\">—</div>") + "</td>";',
+'  var isEmptyText = !text || text === "—";',
+'  return "<td class=\\"cell-clickable " + widthClass(col.group) + " " + cls + "\\" data-item=\\"" + esc(item.itemRef) + "\\" data-field=\\"" + esc(col.key) + "\\">" +',
+'    "<div class=\\"" + (isEmptyText ? "cell-short empty-cell" : "cell-text") + "\\">" + esc(isEmptyText ? "—" : text) + "</div></td>";',
 '}',
 '',
-'function renderRef(items) {',
-'  els.refBody.innerHTML = items.map(function (it) {',
-'    var cells = "<td class=\\"cell\\" id=\\"row-item-" + esc(it.itemRef) + "\\" data-item=\\"" + esc(it.itemRef) + "\\" data-field=\\"item\\" tabindex=\\"0\\">" + esc(it.itemRef) + "</td>";',
+'function renderRef() {',
+'  var list = filteredItems();',
+'  document.getElementById("refCounter").textContent = list.length + " de " + DATA.items.length + " itens";',
+'  document.getElementById("refBody").innerHTML = list.length ? list.map(function (it) {',
+'    var cells = "<td class=\\"sticky-item cell-clickable\\" data-item=\\"" + esc(it.itemRef) + "\\" data-field=\\"status\\">Item " + esc(it.itemRef) + "</td>";',
 '    DATA.columns.forEach(function (col) { cells += makeFieldCell(it, col); });',
-'    var statusCls = stateClass(it.result === "Inconsistência" ? "inconsistency" : (it.result === "Atenção" ? "attention" : (it.result === "Não verificável" ? "notverifiable" : "")));',
-'    cells += "<td class=\\"cell " + statusCls + "\\" data-item=\\"" + esc(it.itemRef) + "\\" data-field=\\"status\\" tabindex=\\"0\\">" +',
-'      "<span class=\\"" + badgeClass(it.result) + "\\">" + esc(it.result) + "</span>" +',
-'      "<div class=\\"subtle\\">Prioridade: " + esc(dash(it.priority)) + " | Confiança: " + esc(dash(it.confidence)) + "</div></td>";',
-'    cells += "<td class=\\"cell truncate\\" data-item=\\"" + esc(it.itemRef) + "\\" data-field=\\"observation\\" tabindex=\\"0\\">" + truncateText(it.observation) + "</td>";',
-'    var suppText = (it.supplementaryComparisons || []).map(function (s) { return typeof s === "string" ? s : (s.label || s.description || JSON.stringify(s)); }).join("; ");',
-'    cells += "<td class=\\"cell truncate\\" data-item=\\"" + esc(it.itemRef) + "\\" data-field=\\"supplement\\" tabindex=\\"0\\">" + truncateText(suppText) + "</td>";',
-'    return "<tr id=\\"tr-item-" + esc(it.itemRef) + "\\">" + cells + "</tr>";',
-'  }).join("");',
+'    cells += "<td class=\\"cell-clickable col-w-status " + stateClass(it.result === "Inconsistência" ? "inconsistency" : (it.result === "Atenção" ? "attention" : (it.result === "Não verificável" ? "notverifiable" : ""))) + "\\" data-item=\\"" + esc(it.itemRef) + "\\" data-field=\\"status\\">" +',
+'      badgeHtml(it.result) + "<div style=\\"margin-top:6px;color:var(--ink3);font-size:9.5px\\">" + esc(dash(it.priority)) + "</div></td>";',
+'    cells += "<td class=\\"cell-clickable col-w-observation\\" data-item=\\"" + esc(it.itemRef) + "\\" data-field=\\"observation\\"><div class=\\"cell-text\\">" + esc(dash(it.observation)) + "</div></td>";',
+'    cells += "<td class=\\"cell-clickable " + widthClass("") + "\\" data-item=\\"" + esc(it.itemRef) + "\\" data-field=\\"supplement\\"><div class=\\"cell-text\\">" + esc(supplementaryText(it)) + "</div></td>";',
+'    return "<tr id=\\"ref-row-" + esc(it.itemRef) + "\\">" + cells + "</tr>";',
+'  }).join("") : "<tr><td colspan=\\"" + (DATA.columns.length + 4) + "\\"><div class=\\"empty\\">Nenhum item encontrado com os filtros selecionados.</div></td></tr>";',
 '',
-'  els.refBody.querySelectorAll(".cell[data-item][data-field]").forEach(function (cell) {',
-'    if (cell.dataset.field === "item") return;',
-'    cell.addEventListener("click", function () { openDrawer(cell.dataset.item, cell.dataset.field, cell); });',
-'    cell.addEventListener("keydown", function (ev) {',
-'      if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); openDrawer(cell.dataset.item, cell.dataset.field, cell); }',
-'    });',
+'  Array.prototype.forEach.call(document.querySelectorAll("#refBody .cell-clickable"), function (td) {',
+'    td.addEventListener("click", function () { openCellPanel(td.dataset.item, td.dataset.field, td); });',
 '  });',
 '}',
 '',
@@ -865,149 +1037,170 @@ var PANEL_RUNTIME_JS = [
 '  return DATA.items.filter(function (it) { return String(it.itemRef) === String(itemRef); })[0];',
 '}',
 '',
-'function sourceLine(src) {',
-'  var pages = src.pageStart ? (src.pageStart === src.pageEnd ? ("p. " + src.pageStart) : ("p. " + src.pageStart + "-" + src.pageEnd)) : "";',
-'  return "<strong>" + esc(src.sourceType || "") + "</strong> — " + esc(src.field || "") + ": " + esc(fmtGeneric(src.value)) +',
-'    (src.fileName ? ("<br><span class=\\"subtle\\">" + esc(src.fileName) + (pages ? (", " + pages) : "") + "</span>") : "");',
+'function sourceBlock(label, value, reference) {',
+'  return "<div class=\\"source-block\\"><div class=\\"source-label\\">" + esc(label) + "</div>" +',
+'    "<div class=\\"source-value\\">" + esc(value && value !== "—" ? value : "Não informado / não localizado") + "</div>" +',
+'    (reference ? ("<div class=\\"source-ref\\">Fonte: " + esc(reference) + "</div>") : "") + "</div>";',
 '}',
 '',
-'function openDrawer(itemRef, fieldKey, sourceEl) {',
+'function sourceOfType(field, sourceType) {',
+'  if (!field || !field.sources) return null;',
+'  return field.sources.filter(function (s) { return s.sourceType === sourceType; })[0] || null;',
+'}',
+'function refText(src) {',
+'  if (!src) return "";',
+'  var pages = src.pageStart ? (src.pageStart === src.pageEnd ? ("p. " + src.pageStart) : ("p. " + src.pageStart + "-" + src.pageEnd)) : "";',
+'  return (src.fileName || "") + (pages ? (", " + pages) : "");',
+'}',
+'',
+'function openCellPanel(itemRef, field, cellEl) {',
 '  var item = findItem(itemRef);',
 '  if (!item) return;',
 '',
-'  document.querySelectorAll(".selectedCell").forEach(function (el) { el.classList.remove("selectedCell"); });',
-'  document.querySelectorAll(".selectedRow").forEach(function (el) { el.classList.remove("selectedRow"); });',
-'  if (sourceEl) {',
-'    sourceEl.classList.add("selectedCell");',
-'    var tr = sourceEl.closest("tr");',
-'    if (tr) tr.classList.add("selectedRow");',
-'  }',
+'  Array.prototype.forEach.call(document.querySelectorAll(".cell-selected"), function (x) { x.classList.remove("cell-selected"); });',
+'  if (cellEl) cellEl.classList.add("cell-selected");',
+'  Array.prototype.forEach.call(document.querySelectorAll("#refBody tr"), function (x) { x.classList.remove("row-selected"); });',
+'  var row = document.getElementById("ref-row-" + itemRef);',
+'  if (row) row.classList.add("row-selected");',
 '',
-'  var ctxHtml = "<div class=\\"contextGrid\\">" +',
-'    "<div class=\\"contextCard\\"><div class=\\"k\\">Fornecedor</div><div class=\\"v\\">" + esc(supplierOf(item)) + "</div></div>" +',
-'    "<div class=\\"contextCard\\"><div class=\\"k\\">Valor do item</div><div class=\\"v\\">" + esc(fmtCurrency(valueOf(item))) + "</div></div>" +',
-'    "<div class=\\"contextCard\\"><div class=\\"k\\">Resultado geral</div><div class=\\"v\\"><span class=\\"" + badgeClass(item.result) + "\\">" + esc(item.result) + "</span></div></div>" +',
-'    "<div class=\\"contextCard\\"><div class=\\"k\\">Confiança</div><div class=\\"v\\">" + esc(dash(item.confidence)) + " · Prioridade: " + esc(dash(item.priority)) + "</div></div>" +',
-'    "</div>";',
+'  document.getElementById("drawerKicker").textContent = "Fonte da comparação";',
+'  document.getElementById("drawerSubtitle").textContent = "Item " + item.itemRef + " · " + supplierOf(item) + " · " + fmtCurrency(valueOf(item));',
 '',
-'  var body = "";',
-'  var label = fieldKey;',
+'  var contentHtml = "";',
+'  var titleText = field;',
+'  var assessClass = assessmentClass(item.result);',
 '',
-'  if (fieldKey === "status") {',
-'    label = "Status geral";',
-'    body += "<div class=\\"detailBlock\\"><div class=\\"k\\">Resultado geral</div><div class=\\"v\\"><span class=\\"" + badgeClass(item.result) + "\\">" + esc(item.result) + "</span></div></div>";',
-'    body += "<div class=\\"detailBlock\\"><div class=\\"k\\">Observação consolidada</div><div class=\\"v\\">" + esc(dash(item.observation)) + "</div></div>";',
-'    body += "<div class=\\"detailBlock\\"><div class=\\"k\\">Ação sugerida</div><div class=\\"v\\">" + esc(dash(item.suggestedAction)) + "</div></div>";',
-'    if (item.supplementarySignals && item.supplementarySignals.length) {',
-'      body += "<div class=\\"detailBlock\\"><div class=\\"k\\">Sinalizações complementares</div><div class=\\"v\\">" + esc(item.supplementarySignals.map(function(s){return s.label||s;}).join("; ")) + "</div></div>";',
+'  if (field === "status") {',
+'    titleText = "Status geral";',
+'    contentHtml += "<div class=\\"source-card\\"><h3>Resultado</h3>" +',
+'      sourceBlock("Resultado geral", item.result) +',
+'      sourceBlock("Prioridade", dash(item.priority)) +',
+'      sourceBlock("Confiança", dash(item.confidence)) + "</div>";',
+'    contentHtml += "<div class=\\"source-card\\"><h3>Avaliação</h3><div class=\\"assessment " + assessClass + "\\">" + esc(dash(item.observation)) + "</div></div>";',
+'    if (item.suggestedAction) {',
+'      contentHtml += "<div class=\\"source-card\\"><h3>Ação sugerida</h3><div class=\\"source-value\\">" + esc(item.suggestedAction) + "</div></div>";',
 '    }',
 '    if (item.documentsToOpen && item.documentsToOpen.length) {',
-'      body += "<div class=\\"detailBlock\\"><div class=\\"k\\">Documentos a abrir</div><div class=\\"v\\">" + item.documentsToOpen.map(function (d) {',
-'        return esc((d.fileName || "") + (d.pages ? (", p. " + d.pages.join("-")) : "") + (d.reason ? (" — " + d.reason) : ""));',
-'      }).join("<br>") + "</div></div>";',
+'      contentHtml += "<div class=\\"source-card\\"><h3>Documentos a abrir</h3><div class=\\"fiscal-list\\">" + item.documentsToOpen.map(function (d) {',
+'        return "<div class=\\"fiscal-item\\"><div class=\\"fiscal-item-title\\">" + esc(d.fileName || "—") + (d.pages ? (" · p. " + d.pages.join("-")) : "") + "</div>" +',
+'          (d.reason ? ("<div class=\\"fiscal-item-meta\\">" + esc(d.reason) + "</div>") : "") + "</div>";',
+'      }).join("") + "</div></div>";',
 '    }',
-'  } else if (fieldKey === "observation") {',
-'    label = "Observações de análise";',
-'    body += "<div class=\\"detailBlock\\"><div class=\\"k\\">Observação consolidada</div><div class=\\"v\\">" + esc(dash(item.observation)) + "</div></div>";',
-'    body += "<div class=\\"detailBlock\\"><div class=\\"k\\">Ação sugerida</div><div class=\\"v\\">" + esc(dash(item.suggestedAction)) + "</div></div>";',
-'  } else if (fieldKey === "supplement") {',
-'    label = "Comparações suplementares";',
-'    var supp = (item.supplementaryComparisons || []).map(function (s) { return typeof s === "string" ? s : (s.label || s.description || JSON.stringify(s)); });',
-'    body += "<div class=\\"detailBlock\\"><div class=\\"k\\">Achados complementares</div><div class=\\"v\\">" + (supp.length ? esc(supp.join("; ")) : "Nenhum achado complementar registrado.") + "</div></div>";',
+'  } else if (field === "observation") {',
+'    titleText = "Observações de análise";',
+'    contentHtml += "<div class=\\"source-card\\"><h3>Observação consolidada</h3><div class=\\"assessment " + assessClass + "\\">" + esc(dash(item.observation)) + "</div></div>";',
+'    contentHtml += "<div class=\\"source-card\\"><h3>Ação sugerida</h3><div class=\\"source-value\\">" + esc(dash(item.suggestedAction)) + "</div></div>";',
+'  } else if (field === "supplement") {',
+'    titleText = "Comparações suplementares";',
+'    contentHtml += "<div class=\\"source-card\\"><h3>Achados complementares</h3><div class=\\"source-value\\">" + esc(supplementaryText(item)) + "</div></div>";',
 '    var dims = item.dimensions || {};',
 '    if (dims.possibleEquipment && dims.possibleEquipment.flag) {',
-'      body += "<div class=\\"detailBlock\\"><div class=\\"k\\">Possível equipamento ou material permanente</div><div class=\\"v\\">" + esc(dash(dims.possibleEquipment.assessment)) + "</div></div>";',
+'      contentHtml += "<div class=\\"source-card\\"><h3>Possível equipamento ou material permanente</h3><div class=\\"source-value\\">" + esc(dash(dims.possibleEquipment.assessment)) + "</div></div>";',
 '    }',
 '    if (dims.importation && dims.importation.isImported) {',
-'      body += "<div class=\\"detailBlock\\"><div class=\\"k\\">Importação</div><div class=\\"v\\">" + esc(dash(dims.importation.assessment)) + "</div></div>";',
+'      contentHtml += "<div class=\\"source-card\\"><h3>Importação</h3><div class=\\"source-value\\">" + esc(dash(dims.importation.assessment)) + "</div></div>";',
 '    }',
 '  } else {',
-'    var field = (item.fields || {})[fieldKey] || {};',
-'    label = field.label || fieldKey;',
-'    if (isEmpty(field.refValue)) {',
-'      body += "<div class=\\"detailBlock\\"><div class=\\"k\\">Aviso</div><div class=\\"v\\">Informação não fornecida no REF. O dado abaixo foi localizado apenas no documento fiscal ou comprovante e não foi transferido para o REF.</div></div>";',
+'    var f = (item.fields || {})[field] || {};',
+'    titleText = f.label || field;',
+'',
+'    var fiscalSrc = sourceOfType(f, "fiscal") || sourceOfType(f, "payment");',
+'    var paymentSrc = sourceOfType(f, "payment");',
+'    var fiscalRefText = fiscalSrc ? refText(fiscalSrc) : (isEmpty(f.fiscalValue) ? "" : docRefText(item, "fiscal_document"));',
+'    var paymentRefText = paymentSrc ? refText(paymentSrc) : (isEmpty(f.paymentValue) ? "" : docRefText(item, "payment_proof"));',
+'',
+'    contentHtml += "<div class=\\"source-card\\"><h3>Valores e fontes</h3>" +',
+'      sourceBlock("REF / Prompt", fmtByGroup(f, f.refValue)) +',
+'      sourceBlock("Documento fiscal (NF)", fmtByGroup(f, f.fiscalValue), fiscalRefText) +',
+'      sourceBlock("Comprovante / extrato", fmtByGroup(f, f.paymentValue), paymentRefText) +',
+'      "</div>";',
+'',
+'    if (isEmpty(f.refValue)) {',
+'      contentHtml += "<div class=\\"source-card\\"><h3>Aviso</h3><div class=\\"source-value\\">Informação não fornecida no REF. O dado apresentado acima foi localizado apenas no documento fiscal ou comprovante e não foi transferido para o REF.</div></div>";',
 '    }',
-'    body += "<div class=\\"detailBlock\\"><div class=\\"k\\">Valor no REF ou Prompt</div><div class=\\"v\\">" + esc(fmtByGroup(field, field.refValue)) + "</div></div>";',
-'    body += "<div class=\\"detailBlock\\"><div class=\\"k\\">Valor localizado no documento fiscal</div><div class=\\"v\\">" + esc(fmtByGroup(field, field.fiscalValue)) + "</div></div>";',
-'    body += "<div class=\\"detailBlock\\"><div class=\\"k\\">Valor localizado no comprovante ou extrato</div><div class=\\"v\\">" + esc(fmtByGroup(field, field.paymentValue)) + "</div></div>";',
-'    var comparisonSummary = field.comparison ? field.comparison.summary : null;',
-'    body += "<div class=\\"detailBlock\\"><div class=\\"k\\">Avaliação da comparação</div><div class=\\"v\\">" + esc(dash(comparisonSummary || field.assessment)) + "</div></div>";',
-'    if (field.assessment && field.assessment !== comparisonSummary) {',
-'      body += "<div class=\\"detailBlock\\"><div class=\\"k\\">Avaliação detalhada</div><div class=\\"v\\">" + esc(field.assessment) + "</div></div>";',
+'',
+'    var assessText = (f.comparison && f.comparison.summary) || f.assessment || "A informação foi apresentada conforme as evidências disponíveis.";',
+'    contentHtml += "<div class=\\"source-card\\"><h3>Avaliação</h3><div class=\\"assessment " + assessClass + "\\">" + esc(assessText) + "</div></div>";',
+'    if (f.assessment && f.assessment !== (f.comparison && f.comparison.summary)) {',
+'      contentHtml += "<div class=\\"source-card\\"><h3>Avaliação detalhada</h3><div class=\\"source-value\\">" + esc(f.assessment) + "</div></div>";',
 '    }',
-'    if (field.group === "description" && item.fiscalItems && item.fiscalItems.length) {',
-'      body += "<div class=\\"detailBlock\\"><div class=\\"k\\">Itens fiscais relacionados</div><div class=\\"v\\">" + item.fiscalItems.map(function (fi) {',
-'        return "• " + esc(fi.descriptionOriginal || "—") + " <span class=\\"subtle\\">(p. " + esc(dash(fi.page)) + ")</span>";',
-'      }).join("<br>") + "</div></div>";',
+'',
+'    if (f.group === "description" && item.fiscalItems && item.fiscalItems.length) {',
+'      contentHtml += "<div class=\\"source-card\\"><h3>Itens do documento fiscal</h3><div class=\\"fiscal-list\\">" + item.fiscalItems.map(function (fi) {',
+'        return "<div class=\\"fiscal-item\\"><div class=\\"fiscal-item-title\\">" + esc(fi.descriptionOriginal || "—") + "</div>" +',
+'          "<div class=\\"fiscal-item-meta\\">" + esc(dash(fi.quantity)) + " " + esc(fi.unit || "") + " · p. " + esc(dash(fi.page)) + "</div></div>";',
+'      }).join("") + "</div></div>";',
 '    }',
-'    if (field.sources && field.sources.length) {',
-'      body += "<div class=\\"detailBlock\\"><div class=\\"k\\">Fontes</div><div class=\\"v\\">" + field.sources.map(sourceLine).join("<hr style=\\"border:none;border-top:1px solid var(--border);margin:8px 0;\\">") + "</div></div>";',
+'',
+'    if (f.sources && f.sources.length) {',
+'      contentHtml += "<div class=\\"source-card\\"><h3>Fontes detalhadas</h3>" + f.sources.map(function (s) {',
+'        return sourceBlock((s.sourceType || "fonte") + " — " + (s.field || ""), fmtGeneric(s.value), refText(s));',
+'      }).join("") + "</div>";',
 '    }',
 '  }',
 '',
-'  els.drawerSubtitle.textContent = "Item " + item.itemRef + " · " + label;',
-'  els.drawerBody.innerHTML = ctxHtml + body + "<div class=\\"footerNote\\">Somente leitura. Os dados do REF/Prompt foram preservados; a nota fiscal e o comprovante aparecem como fontes de comparação.</div>";',
+'  document.getElementById("drawerTitle").textContent = titleText;',
+'  document.getElementById("drawerContent").innerHTML = contentHtml +',
+'    "<div class=\\"source-card\\"><h3>Rastreabilidade do Item</h3>" +',
+'    sourceBlock("Documento fiscal", docRefText(item, "fiscal_document") || "Não localizado") +',
+'    sourceBlock("Comprovante", docRefText(item, "payment_proof") || "Não localizado") +',
+'    sourceBlock("Confiança da associação", dash(item.confidence)) + "</div>";',
 '',
-'  els.drawerBackdrop.classList.add("open");',
-'  els.drawer.classList.add("open");',
+'  document.getElementById("drawerOverlay").classList.add("open");',
+'  document.getElementById("drawer").classList.add("open");',
+'  document.getElementById("drawer").setAttribute("aria-hidden", "false");',
+'  document.body.style.overflow = "hidden";',
 '}',
 '',
-'function closeDrawerFn() {',
-'  els.drawerBackdrop.classList.remove("open");',
-'  els.drawer.classList.remove("open");',
-'  document.querySelectorAll(".selectedCell").forEach(function (el) { el.classList.remove("selectedCell"); });',
-'  document.querySelectorAll(".selectedRow").forEach(function (el) { el.classList.remove("selectedRow"); });',
+'function closeDrawer() {',
+'  document.getElementById("drawerOverlay").classList.remove("open");',
+'  document.getElementById("drawer").classList.remove("open");',
+'  document.getElementById("drawer").setAttribute("aria-hidden", "true");',
+'  document.body.style.overflow = "";',
+'  Array.prototype.forEach.call(document.querySelectorAll(".cell-selected"), function (x) { x.classList.remove("cell-selected"); });',
 '}',
 '',
-'function goToItem(itemRef) {',
-'  setTab("ref");',
-'  renderAll(function () {',
-'    var row = document.getElementById("tr-item-" + itemRef);',
+'function switchTab(tab) {',
+'  Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (x) { x.classList.toggle("active", x.dataset.tab === tab); });',
+'  Array.prototype.forEach.call(document.querySelectorAll(".view"), function (x) { x.classList.toggle("active", x.id === "view-" + tab); });',
+'  renderCurrent();',
+'  window.scrollTo({ top: 0, behavior: "smooth" });',
+'}',
+'',
+'function renderCurrent() {',
+'  syncFilterInputs();',
+'  renderKpis();',
+'  renderOverview();',
+'  renderRef();',
+'}',
+'',
+'function openRefAtItem(itemRef) {',
+'  state.quick = "all"; state.search = ""; state.result = ""; state.budget = ""; state.supplier = "";',
+'  switchTab("ref");',
+'  setTimeout(function () {',
+'    var row = document.getElementById("ref-row-" + itemRef);',
 '    if (row) {',
 '      row.scrollIntoView({ behavior: "smooth", block: "center" });',
-'      var firstCell = row.querySelector(".cell[data-field]:not([data-field=\\"item\\"])");',
-'      if (firstCell) openDrawer(itemRef, firstCell.dataset.field, firstCell);',
+'      row.classList.add("row-selected");',
+'      setTimeout(function () { row.classList.remove("row-selected"); }, 1800);',
 '    }',
-'  });',
+'  }, 120);',
 '}',
 '',
-'function setTab(tabName) {',
-'  state.tab = tabName;',
-'  els.tabs.forEach(function (btn) { btn.classList.toggle("active", btn.dataset.tab === tabName); });',
-'  Object.keys(els.tabContents).forEach(function (k) { els.tabContents[k].classList.toggle("active", k === tabName); });',
-'}',
-'',
-'function renderAll(afterRender) {',
-'  var filtered = getFilteredItems();',
-'  renderStats(filtered);',
-'  renderExceptions(filtered);',
-'  renderSignals();',
-'  renderRef(filtered);',
-'  if (typeof afterRender === "function") afterRender();',
-'}',
-'',
-'els.tabs.forEach(function (btn) { btn.addEventListener("click", function () { setTab(btn.dataset.tab); }); });',
-'els.searchInput.addEventListener("input", function (e) { state.search = e.target.value; renderAll(); });',
-'els.resultFilter.addEventListener("change", function (e) { state.result = e.target.value; state.statFilter = ""; renderAll(); });',
-'els.budgetFilter.addEventListener("change", function (e) { state.budget = e.target.value; renderAll(); });',
-'els.supplierFilter.addEventListener("change", function (e) { state.supplier = e.target.value; renderAll(); });',
-'els.exceptionsOnly.addEventListener("change", function (e) { state.exceptionsOnly = e.target.checked; renderAll(); });',
-'els.equipmentOnly.addEventListener("change", function (e) { state.equipmentOnly = e.target.checked; renderAll(); });',
-'els.clearFilters.addEventListener("click", function () {',
-'  state.search = ""; state.result = ""; state.budget = ""; state.supplier = "";',
-'  state.exceptionsOnly = true; state.equipmentOnly = false; state.statFilter = "";',
-'  els.searchInput.value = ""; els.resultFilter.value = ""; els.budgetFilter.value = ""; els.supplierFilter.value = "";',
-'  els.exceptionsOnly.checked = true; els.equipmentOnly.checked = false;',
-'  renderAll();',
+'Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (tab) {',
+'  tab.addEventListener("click", function () { switchTab(tab.dataset.tab); });',
 '});',
-'els.closeDrawer.addEventListener("click", closeDrawerFn);',
-'els.drawerBackdrop.addEventListener("click", closeDrawerFn);',
-'window.addEventListener("keydown", function (ev) { if (ev.key === "Escape") closeDrawerFn(); });',
+'document.getElementById("closeDrawer").addEventListener("click", closeDrawer);',
+'document.getElementById("drawerOverlay").addEventListener("click", closeDrawer);',
+'document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeDrawer(); });',
 '',
 'renderMeta();',
+'renderLegend();',
+'renderSignals();',
 'renderRefHead();',
-'buildFilterOptions();',
-'renderAll();'
+'createFilters("overviewFilters", "exceptions");',
+'createFilters("refFilters", "exceptions");',
+'renderCurrent();'
 ].join('\n');
 
 function escOuterHtml(str) {
@@ -1017,7 +1210,7 @@ function escOuterHtml(str) {
 }
 
 function buildPanelHtml(json) {
-  var title = "Painel de Pré-análise" + (json.project && json.project.projectId ? (" " + json.project.projectId) : "");
+  var title = "Pré-análise documental" + (json.project && json.project.projectId ? (" — " + json.project.projectId) : "");
   var head = PANEL_HTML_HEAD.replace('__TITLE__', escOuterHtml(title));
   var dataJson = JSON.stringify(json)
     .replace(/</g, '\\u003c')
