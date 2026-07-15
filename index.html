@@ -574,7 +574,10 @@ var PANEL_HTML_HEAD = `<!DOCTYPE html>
         <div class="brand">
           <div class="brand-mark">I</div>
           <div>
-            <h1>Pré-análise documental</h1>
+            <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;">
+              <h1>Pré-análise documental</h1>
+              <span class="project-chip" id="headerProjectBadge" style="font-size:12px;display:none;"></span>
+            </div>
             <div class="subtitle" id="headerSubtitle"></div>
             <div class="project-meta" id="projectMeta"></div>
           </div>
@@ -756,6 +759,7 @@ var PANEL_RUNTIME_JS = [
 '',
 'function buildColumns(items) {',
 '  var map = {};',
+'  var hasRefValue = {};',
 '  items.forEach(function (it) {',
 '    var fields = it.fields || {};',
 '    Object.keys(fields).forEach(function (key) {',
@@ -769,9 +773,10 @@ var PANEL_RUNTIME_JS = [
 '          group: f.group || ""',
 '        };',
 '      }',
+'      if (!isEmpty(f.refValue)) hasRefValue[key] = true;',
 '    });',
 '  });',
-'  var cols = Object.keys(map).map(function (k) { return map[k]; });',
+'  var cols = Object.keys(map).filter(function (k) { return hasRefValue[k]; }).map(function (k) { return map[k]; });',
 '  cols.sort(function (a, b) { return a.order - b.order; });',
 '  return cols;',
 '}',
@@ -839,10 +844,28 @@ var PANEL_RUNTIME_JS = [
 '  var p = RAW_DATA.project || {};',
 '  var input = RAW_DATA.input || {};',
 '  document.getElementById("headerSubtitle").textContent =',
-'    (p.expenseCategory || "Pré-análise") + " · " + DATA.items.length + " itens · Modo " + (input.mode || "—");',
+'    (p.expenseCategory || p.analysisName || "Pré-análise") + " · " + DATA.items.length + " itens · Modo " + (input.mode || "—");',
+'',
+'  var badgeParts = [];',
+'  if (p.projectId) badgeParts.push(p.projectId);',
+'  if (p.projectName) badgeParts.push(p.projectName);',
+'  if (!badgeParts.length && p.analysisName) badgeParts.push(p.analysisName);',
+'  if (!badgeParts.length && p.expenseCategory) badgeParts.push(p.expenseCategory);',
+'  var badgeEl = document.getElementById("headerProjectBadge");',
+'  if (badgeParts.length) {',
+'    badgeEl.textContent = badgeParts.join(" \u2014 ");',
+'    badgeEl.style.display = "inline-flex";',
+'  } else {',
+'    badgeEl.style.display = "none";',
+'  }',
+'',
 '  var chips = [];',
 '  if (p.projectId) chips.push(["Projeto", p.projectId]);',
 '  if (p.projectName) chips.push(["Nome", p.projectName]);',
+'  if (p.expenseCategory) chips.push(["Rubrica", p.expenseCategory]);',
+'  if (p.analysisName) chips.push(["An\u00e1lise", p.analysisName]);',
+'  if (input.mode) chips.push(["Modo", input.mode]);',
+'  chips.push(["Itens", String(DATA.items.length)]);',
 '  if (RAW_DATA.generatedAt) chips.push(["Gerado em", fmtGeneric(RAW_DATA.generatedAt)]);',
 '  document.getElementById("projectMeta").innerHTML = chips.map(function (c) {',
 '    return "<span class=\\"project-chip\\"><strong>" + esc(c[0]) + ":</strong> " + esc(c[1]) + "</span>";',
