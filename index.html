@@ -812,6 +812,7 @@ var PANEL_RUNTIME_JS = [
 '      var f = fields[key];',
 '      if (f && f.panel && f.panel.displayInRefView === false) return;',
 '      if (f && f.group === "bank") return;',
+'      if (key === "paymentDate") return;',
 '      if (!map[key]) {',
 '        map[key] = {',
 '          key: key,',
