@@ -475,6 +475,7 @@ var PANEL_HTML_HEAD = `<!DOCTYPE html>
       <nav class="tabs">
         <button class="tab active" data-tab="overview">Visão geral</button>
         <button class="tab" data-tab="ref">Visão REF</button>
+        <button class="tab" data-tab="checklist" id="checklistTabBtn" style="display:none">Checklist de documentos</button>
       </nav>
     </div>
   </header>
@@ -533,6 +534,22 @@ var PANEL_HTML_HEAD = `<!DOCTYPE html>
         <table aria-label="Visão REF">
           <thead><tr id="refHeadRow"></tr></thead>
           <tbody id="refBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="view" id="view-checklist">
+      <div class="section-header">
+        <div>
+          <h2>Checklist de documentos por item</h2>
+          <p>Quais documentos eram esperados para cada item e se foram localizados. Clique numa célula para abrir o item.</p>
+        </div>
+        <div class="counter" id="checklistCounter"></div>
+      </div>
+      <div class="table-shell" id="checklistTableShell">
+        <table aria-label="Checklist de documentos">
+          <thead><tr id="checklistHeadRow"></tr></thead>
+          <tbody id="checklistBody"></tbody>
         </table>
       </div>
     </section>
@@ -731,6 +748,19 @@ var PANEL_RUNTIME_JS = [
 'DATA.items = Array.isArray(RAW_DATA.items) ? RAW_DATA.items : [];',
 'DATA.documents = Array.isArray(RAW_DATA.documents) ? RAW_DATA.documents : [];',
 'DATA.columns = buildColumns(DATA.items);',
+'function buildChecklistColumns(items) {',
+'  var seen = {};',
+'  var cols = [];',
+'  (items || []).forEach(function (it) {',
+'    (it.documentChecklist || []).forEach(function (entry) {',
+'      if (!entry || !entry.type || seen[entry.type]) return;',
+'      seen[entry.type] = true;',
+'      cols.push({ type: entry.type, label: entry.label || entry.type });',
+'    });',
+'  });',
+'  return cols;',
+'}',
+'DATA.checklistColumns = buildChecklistColumns(DATA.items);',
 '',
 'var FIXED_COLS = [',
 '  { key: "__status", label: "Status geral", width: 122 },',
@@ -1411,11 +1441,51 @@ var PANEL_RUNTIME_JS = [
 '  window.scrollTo({ top: 0, behavior: "smooth" });',
 '}',
 '',
+'function checklistBadgeHtml(status) {',
+'  var cls = "badge-gray", txt = "—";',
+'  if (status === "present") { cls = "badge-green"; txt = "OK"; }',
+'  else if (status === "not_applicable") { cls = "badge-gray"; txt = "NA"; }',
+'  else if (status === "missing") { cls = "badge-red"; txt = "Pendente"; }',
+'  return "<span class=\\"" + cls + "\\">" + txt + "</span>";',
+'}',
+'function checklistEntryFor(item, type) {',
+'  return (item.documentChecklist || []).filter(function (e) { return e && e.type === type; })[0] || null;',
+'}',
+'function renderChecklistHead() {',
+'  var cells = ["<th class=\\"sticky-item\\">Item</th>", "<th>" + esc(identifierLabel()) + "</th>"];',
+'  (DATA.checklistColumns || []).forEach(function (col) {',
+'    cells.push("<th>" + esc(col.label) + "</th>");',
+'  });',
+'  document.getElementById("checklistHeadRow").innerHTML = cells.join("");',
+'}',
+'function renderChecklist() {',
+'  var cols = DATA.checklistColumns || [];',
+'  var tabBtn = document.getElementById("checklistTabBtn");',
+'  var hasData = cols.length > 0;',
+'  if (tabBtn) tabBtn.style.display = hasData ? "" : "none";',
+'  if (!hasData) return;',
+'  renderChecklistHead();',
+'  var list = DATA.items || [];',
+'  document.getElementById("checklistCounter").textContent = list.length + " item(ns)";',
+'  document.getElementById("checklistBody").innerHTML = list.length ? list.map(function (it) {',
+'    var cells = "<td class=\\"sticky-item cell-clickable\\" data-item=\\"" + esc(it.itemRef) + "\\" data-field=\\"status\\">Item " + esc(it.itemRef) + "</td>";',
+'    cells += "<td class=\\"cell-clickable\\" data-item=\\"" + esc(it.itemRef) + "\\" data-field=\\"status\\">" + esc(supplierOf(it)) + "</td>";',
+'    cols.forEach(function (col) {',
+'      var entry = checklistEntryFor(it, col.type);',
+'      cells += "<td class=\\"cell-clickable\\" data-item=\\"" + esc(it.itemRef) + "\\" data-field=\\"status\\">" + checklistBadgeHtml(entry ? entry.status : null) + "</td>";',
+'    });',
+'    return "<tr>" + cells + "</tr>";',
+'  }).join("") : "<tr><td colspan=\\"" + (cols.length + 2) + "\\"><div class=\\"empty\\">Nenhum item.</div></td></tr>";',
+'  Array.prototype.forEach.call(document.querySelectorAll("#checklistBody .cell-clickable"), function (td) {',
+'    td.addEventListener("click", function () { openCellPanel(td.dataset.item, td.dataset.field, td); });',
+'  });',
+'}',
 'function renderCurrent() {',
 '  syncFilterInputs();',
 '  renderKpis();',
 '  renderOverview();',
 '  renderRef();',
+'  renderChecklist();',
 '  applyStickyOffsets();',
 '}',
 '',
