@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Inovatus · Pré-análise — Ferramentas</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<title>Inovatus · Pré-análise — Gerar painel e Excel</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -104,8 +103,7 @@ input:focus, select:focus, textarea:focus { border-color:var(--accent); backgrou
   <aside class="sidebar">
     <div class="brand">Inovatus</div>
     <nav>
-      <button class="nav-item active" data-tab="mesclar"><span class="ico">&#128196;</span> Mesclar PDFs</button>
-      <button class="nav-item" data-tab="painel"><span class="ico">&#128200;</span> Gerar painel</button>
+      <button class="nav-item active" data-tab="painel"><span class="ico">&#128200;</span> Gerar painel</button>
       <button class="nav-item" data-tab="excel"><span class="ico">&#128202;</span> Gerar Excel</button>
     </nav>
     <div class="sidebar-footer">Pré-análise REF · ferramentas locais<br>Nenhum arquivo sai do seu navegador.</div>
@@ -113,26 +111,7 @@ input:focus, select:focus, textarea:focus { border-color:var(--accent); backgrou
 
   <main class="main">
 
-    <section id="tab-mesclar" class="tab-section active">
-      <div class="page-header">
-        <h1>Mesclar PDFs</h1>
-        <div class="subtitle">Junta os PDFs iniciais em um único arquivo, na ordem que você definir.</div>
-      </div>
-      <div class="card">
-        <div class="dropzone" id="mesclarDropzone">
-          <p><strong>Clique para escolher</strong> ou arraste os PDFs aqui</p>
-          <input type="file" id="mesclarFileInput" accept="application/pdf" multiple>
-        </div>
-        <div class="file-list" id="mesclarList"></div>
-        <div class="filerow-actions">
-          <button class="btn btn-ghost" id="mesclarClearBtn" style="display:none;">Limpar</button>
-          <button class="btn btn-primary" id="mesclarMergeBtn" disabled>Mesclar e baixar</button>
-        </div>
-        <div class="status-line" id="mesclarStatus"></div>
-      </div>
-    </section>
-
-    <section id="tab-painel" class="tab-section">
+    <section id="tab-painel" class="tab-section active">
       <div class="page-header">
         <h1>Gerar painel de visualização</h1>
         <div class="subtitle">Envie o JSON da pré-análise e receba o painel HTML pronto, no layout padrão Inovatus.</div>
@@ -186,124 +165,6 @@ document.querySelectorAll('.nav-item').forEach(function (btn) {
     document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
   });
 });
-</script>
-
-<script>
-/* ======================= MESCLAR PDFS ======================= */
-var mesclarFiles = [];
-var mesclarDragSrcIndex = null;
-
-var mesclarDropzone = document.getElementById('mesclarDropzone');
-var mesclarFileInput = document.getElementById('mesclarFileInput');
-var mesclarListEl = document.getElementById('mesclarList');
-var mesclarMergeBtn = document.getElementById('mesclarMergeBtn');
-var mesclarClearBtn = document.getElementById('mesclarClearBtn');
-var mesclarStatusEl = document.getElementById('mesclarStatus');
-
-mesclarDropzone.addEventListener('click', function () { mesclarFileInput.click(); });
-mesclarDropzone.addEventListener('dragover', function (e) { e.preventDefault(); mesclarDropzone.classList.add('dragover'); });
-mesclarDropzone.addEventListener('dragleave', function () { mesclarDropzone.classList.remove('dragover'); });
-mesclarDropzone.addEventListener('drop', function (e) {
-  e.preventDefault();
-  mesclarDropzone.classList.remove('dragover');
-  mesclarAddFiles(Array.from(e.dataTransfer.files).filter(function (f) { return f.type === 'application/pdf'; }));
-});
-mesclarFileInput.addEventListener('change', function (e) {
-  mesclarAddFiles(Array.from(e.target.files));
-  mesclarFileInput.value = '';
-});
-
-function mesclarAddFiles(newFiles) {
-  mesclarFiles = mesclarFiles.concat(newFiles);
-  mesclarRenderList();
-  mesclarSetStatus('');
-}
-
-function mesclarRenderList() {
-  mesclarListEl.innerHTML = '';
-  mesclarFiles.forEach(function (file, index) {
-    var item = document.createElement('div');
-    item.className = 'file-item';
-    item.draggable = true;
-    item.dataset.index = index;
-    item.innerHTML =
-      '<span class="handle">&#10247;</span>' +
-      '<span class="order">' + (index + 1) + '</span>' +
-      '<span class="name"></span>' +
-      '<button class="remove" title="Remover">&#10005;</button>';
-    item.querySelector('.name').textContent = file.name;
-
-    item.addEventListener('dragstart', function () {
-      mesclarDragSrcIndex = index;
-      item.classList.add('dragging');
-    });
-    item.addEventListener('dragend', function () { item.classList.remove('dragging'); });
-    item.addEventListener('dragover', function (e) { e.preventDefault(); });
-    item.addEventListener('drop', function (e) {
-      e.preventDefault();
-      var targetIndex = Number(item.dataset.index);
-      if (mesclarDragSrcIndex === null || mesclarDragSrcIndex === targetIndex) return;
-      var moved = mesclarFiles.splice(mesclarDragSrcIndex, 1)[0];
-      mesclarFiles.splice(targetIndex, 0, moved);
-      mesclarRenderList();
-    });
-
-    item.querySelector('.remove').addEventListener('click', function () {
-      mesclarFiles.splice(index, 1);
-      mesclarRenderList();
-    });
-
-    mesclarListEl.appendChild(item);
-  });
-
-  mesclarMergeBtn.disabled = mesclarFiles.length < 2;
-  mesclarClearBtn.style.display = mesclarFiles.length ? 'block' : 'none';
-}
-
-mesclarClearBtn.addEventListener('click', function () {
-  mesclarFiles = [];
-  mesclarRenderList();
-  mesclarSetStatus('');
-});
-
-mesclarMergeBtn.addEventListener('click', function () {
-  mesclarSetStatus('Mesclando...', '');
-  mesclarMergeBtn.disabled = true;
-
-  var PDFDocument = PDFLib.PDFDocument;
-
-  (async function () {
-    try {
-      var mergedPdf = await PDFDocument.create();
-      for (var i = 0; i < mesclarFiles.length; i++) {
-        var file = mesclarFiles[i];
-        var bytes = await file.arrayBuffer();
-        var pdf = await PDFDocument.load(bytes);
-        var pages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
-        pages.forEach(function (page) { mergedPdf.addPage(page); });
-      }
-      var mergedBytes = await mergedPdf.save();
-      var blob = new Blob([mergedBytes], { type: 'application/pdf' });
-      var url = URL.createObjectURL(blob);
-      var a = document.createElement('a');
-      a.href = url;
-      a.download = 'mesclado.pdf';
-      a.click();
-      URL.revokeObjectURL(url);
-      mesclarSetStatus('PDF gerado e baixado com sucesso.', 'success');
-    } catch (err) {
-      console.error(err);
-      mesclarSetStatus('Erro ao mesclar: ' + err.message, 'error');
-    } finally {
-      mesclarMergeBtn.disabled = mesclarFiles.length < 2;
-    }
-  })();
-});
-
-function mesclarSetStatus(msg, type) {
-  mesclarStatusEl.textContent = msg;
-  mesclarStatusEl.className = 'status-line' + (type ? ' ' + type : '');
-}
 </script>
 
 <script>
